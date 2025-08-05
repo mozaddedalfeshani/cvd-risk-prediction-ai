@@ -1,0 +1,64 @@
+name: Accuracy Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-accuracy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.10
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Check Model Accuracy
+      run: |
+        python -c "
+        import pandas as pd
+        from sklearn.model_selection import train_test_split
+        from sklearn.metrics import accuracy_score
+        from lightgbm import LGBMClassifier
+        
+        print('Loading dataset...')
+        df = pd.read_csv('CVD_Dataset_ML_Ready.csv')
+        print(f'Dataset shape: {df.shape}')
+        
+        print('Preparing data...')
+        X = df.drop('CVD Risk Level', axis=1)
+        y = df['CVD Risk Level']
+        
+        print('Splitting data...')
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+        
+        print('Training LightGBM model...')
+        model = LGBMClassifier(random_state=42, verbose=-1)
+        model.fit(X_train, y_train)
+        
+        print('Making predictions...')
+        y_pred = model.predict(X_test)
+        accuracy = accuracy_score(y_test, y_pred)
+        
+        print(f'Model accuracy: {accuracy:.4f} ({accuracy*100:.2f}%)')
+        
+        if accuracy < 0.85:
+            print('❌ ERROR: Model accuracy is below 85% threshold!')
+            print(f'Current accuracy: {accuracy*100:.2f}%')
+            print('Required accuracy: 85.00%')
+            exit(1)
+        else:
+            print('✅ SUCCESS: Model accuracy is above 85% threshold!')
+            print(f'Current accuracy: {accuracy*100:.2f}%')
+            print('Required accuracy: 85.00%')
+        " 

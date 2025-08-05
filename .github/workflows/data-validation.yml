@@ -1,0 +1,85 @@
+name: Data Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.10
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas numpy
+    
+    - name: Validate Dataset
+      run: |
+        python -c "
+        import pandas as pd
+        import numpy as np
+        
+        print('Checking dataset integrity...')
+        
+        # Load dataset
+        df = pd.read_csv('CVD_Dataset_ML_Ready.csv')
+        print(f'Dataset shape: {df.shape}')
+        
+        # Check for missing values
+        missing_values = df.isnull().sum().sum()
+        print(f'Missing values: {missing_values}')
+        
+        if missing_values > 0:
+            print('❌ ERROR: Dataset has missing values!')
+            print('Dataset should have 0 missing values.')
+            exit(1)
+        else:
+            print('✅ SUCCESS: No missing values found!')
+        
+        # Check dataset size
+        if df.shape[0] < 1000:
+            print('❌ ERROR: Dataset too small!')
+            print(f'Current size: {df.shape[0]} rows')
+            print('Required: At least 1000 rows')
+            exit(1)
+        else:
+            print(f'✅ SUCCESS: Dataset size is good ({df.shape[0]} rows)')
+        
+        # Check features
+        if df.shape[1] < 20:
+            print('❌ ERROR: Not enough features!')
+            print(f'Current features: {df.shape[1]}')
+            print('Required: At least 20 features')
+            exit(1)
+        else:
+            print(f'✅ SUCCESS: Feature count is good ({df.shape[1]} features)')
+        
+        # Check target variable
+        if 'CVD Risk Level' not in df.columns:
+            print('❌ ERROR: Target variable "CVD Risk Level" not found!')
+            exit(1)
+        else:
+            print('✅ SUCCESS: Target variable found!')
+        
+        # Check target distribution
+        target_counts = df['CVD Risk Level'].value_counts()
+        print(f'Target distribution: {target_counts.to_dict()}')
+        
+        if len(target_counts) < 2:
+            print('❌ ERROR: Target variable has less than 2 classes!')
+            exit(1)
+        else:
+            print('✅ SUCCESS: Target variable has multiple classes!')
+        
+        print('🎉 All data validation checks passed!')
+        " 
