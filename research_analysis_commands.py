@@ -1,5 +1,5 @@
 # =============================================================================
-# RESEARCH PAPER ANALYSIS COMMANDS
+# MURAD RESEARCH PAPER ANALYSIS COMMANDS
 # =============================================================================
 # This file contains all Python commands for research paper analysis
 # Use with CVD_Dataset_ML_Ready.csv for best results
