@@ -1,10 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import CVDAssessmentForm from '@/components/CVDAssessmentForm';
-import PredictionResult from '@/components/PredictionResult';
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import CVDAssessmentForm from "@/components/CVDAssessmentForm";
+import PredictionResult from "@/components/PredictionResult";
 
 interface PredictionResult {
   risk_level: string;
@@ -28,10 +34,10 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:5000/api/predict', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5001/api/predict", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(patientData),
       });
@@ -41,10 +47,12 @@ export default function Home() {
       if (data.success) {
         setPrediction(data.prediction);
       } else {
-        setError(data.error || 'Prediction failed');
+        setError(data.error || "Prediction failed");
       }
     } catch (err) {
-      setError('Failed to connect to the backend. Please ensure the Flask server is running.');
+      setError(
+        "Failed to connect to the backend. Please ensure the Flask server is running."
+      );
     } finally {
       setLoading(false);
     }
@@ -67,7 +75,8 @@ export default function Home() {
             AI-Powered Cardiovascular Disease Risk Prediction
           </p>
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg mt-4 inline-block">
-            <span className="font-semibold">95.91% Accuracy</span> • Clinical-Grade Model
+            <span className="font-semibold">95.91% Accuracy</span> •
+            Clinical-Grade Model
           </div>
         </div>
 
@@ -80,13 +89,14 @@ export default function Home() {
                 Patient Assessment Form
               </CardTitle>
               <CardDescription>
-                Please fill in the patient information below to assess cardiovascular disease risk.
-                All fields are required for accurate prediction.
+                Please fill in the patient information below to assess
+                cardiovascular disease risk. All fields are required for
+                accurate prediction.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <CVDAssessmentForm 
-                onSubmit={handlePrediction} 
+              <CVDAssessmentForm
+                onSubmit={handlePrediction}
                 loading={loading}
                 error={error}
               />
@@ -106,8 +116,8 @@ export default function Home() {
         {/* Footer */}
         <div className="mt-12 text-center text-gray-500 text-sm">
           <p>
-            This tool is for clinical decision support only. 
-            Always consult with healthcare professionals for medical decisions.
+            This tool is for clinical decision support only. Always consult with
+            healthcare professionals for medical decisions.
           </p>
         </div>
       </div>

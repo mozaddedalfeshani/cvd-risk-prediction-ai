@@ -31,16 +31,23 @@ def load_model():
     
     # Look for the production model file
     model_paths = [
-        '../docs/models/cvd_model_production.pkl',
-        '../docs/models/MymensingUniversity_ML_Ready_best_model.pkl',
-        '../docs/models/MymensingUniversity_ML_Ready_xgboost_model.pkl'
+        '../../docs/models/cvd_model_production.pkl',
+        '../../docs/models/MymensingUniversity_ML_Ready_best_model.pkl',
+        '../../docs/models/MymensingUniversity_ML_Ready_xgboost_model.pkl'
     ]
     
     for model_path in model_paths:
         if os.path.exists(model_path):
             try:
                 print(f"Loading model from: {model_path}")
-                model_package = joblib.load(model_path)
+                
+                # Try different loading methods to handle numpy version issues
+                try:
+                    import pickle
+                    with open(model_path, 'rb') as f:
+                        model_package = pickle.load(f)
+                except:
+                    model_package = joblib.load(model_path)
                 
                 # Extract model information
                 metadata = model_package['metadata']

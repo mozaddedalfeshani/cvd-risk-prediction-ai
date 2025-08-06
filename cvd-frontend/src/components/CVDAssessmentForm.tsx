@@ -203,7 +203,7 @@ export default function CVDAssessmentForm({
   const loadExampleData = async (type: "low_risk" | "high_risk") => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/example?type=${type}`
+        `http://localhost:5001/api/example?type=${type}`
       );
       const data = await response.json();
 
