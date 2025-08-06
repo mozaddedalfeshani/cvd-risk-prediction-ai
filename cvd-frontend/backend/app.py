@@ -7,7 +7,7 @@ Flask backend API for serving the CVD risk prediction model
 to the NextJS frontend.
 
 Author: AI Assistant
-Date: 2024
+Date: 2025
 """
 
 from flask import Flask, request, jsonify
