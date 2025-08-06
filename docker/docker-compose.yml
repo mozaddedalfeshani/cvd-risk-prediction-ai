@@ -1,0 +1,80 @@
+version: "3.8"
+
+services:
+  # Frontend Service
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: ../docker/frontend.Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5001
+      - NODE_ENV=production
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - cvd-network
+
+  # API Service
+  api:
+    build:
+      context: ../api
+      dockerfile: ../docker/api.Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      - MODEL_PATH=/app/models/cvd_production_model.pkl
+      - API_HOST=0.0.0.0
+      - API_PORT=5001
+      - LOG_LEVEL=INFO
+    volumes:
+      - ../ml-models/models:/app/models:ro
+    restart: unless-stopped
+    networks:
+      - cvd-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Redis for caching (production)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - cvd-network
+    profiles:
+      - production
+
+  # Optional: PostgreSQL for data storage (production)
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=cvd_db
+      - POSTGRES_USER=cvd_user
+      - POSTGRES_PASSWORD=cvd_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - cvd-network
+    profiles:
+      - production
+
+volumes:
+  redis_data:
+  postgres_data:
+
+networks:
+  cvd-network:
+    driver: bridge

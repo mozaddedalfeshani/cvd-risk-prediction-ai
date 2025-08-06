@@ -1,10 +1,28 @@
-pandas>=1.3.0
-numpy>=1.21.0
-scikit-learn>=1.0.0
-xgboost>=1.5.0
-lightgbm>=3.3.0
-catboost>=1.1.0
-imbalanced-learn>=0.8.0
-matplotlib>=3.4.0
-seaborn>=0.11.0
-jupyter>=1.0.0
+# CVD Risk Prediction - Root Dependencies
+# This file contains shared dependencies across components
+
+# Data Science & ML
+pandas>=2.1.4
+numpy>=1.24.3
+scikit-learn>=1.3.2
+
+# Basic utilities
+pyyaml>=6.0
+python-dotenv>=1.0.0
+
+# For development and scripts
+tqdm>=4.66.0
+click>=8.1.0
+
+# Testing (optional)
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# Documentation (optional)
+mkdocs>=1.5.0
+mkdocs-material>=9.4.0
+
+# Code Quality (optional)
+black>=23.9.0
+isort>=5.12.0
+flake8>=6.1.0
