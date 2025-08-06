@@ -4,6 +4,9 @@
 
 Successfully restructured the project from a disorganized, mixed-concern repository into a professional, GitHub-ready, industry-standard architecture.
 
+**Project Author**: Mir Mozadded Alfeshani Murad  
+**Contact**: mozaddedalfeshani@outlook.com
+
 ## 🏗️ Transformation Summary
 
 ### ❌ **Before (Problems)**
@@ -181,8 +184,8 @@ curl "http://localhost:5001/api/example?type=low_risk"
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/cvd-risk-prediction.git
-cd cvd-risk-prediction
+git clone https://github.com/mozaddedalfeshani/cvd-risk-prediction-ai.git
+cd cvd-risk-prediction-ai
 
 # Start backend
 cd api && pip install -r requirements.txt && python app/app_simple.py &
@@ -227,7 +230,7 @@ cd docker && docker-compose up --build
 
 ## 🎯 Next Steps
 
-1. **Push to GitHub**: Repository is ready for public upload
+1. **Push to GitHub**: Repository is ready for public upload as `mozaddedalfeshani/cvd-risk-prediction-ai`
 2. **CI/CD Setup**: Add GitHub Actions workflows
 3. **Documentation**: Expand API documentation
 4. **Testing**: Add comprehensive test suites
@@ -238,6 +241,8 @@ cd docker && docker-compose up --build
 ## 🏁 Conclusion
 
 **🎉 Repository successfully restructured!**
+
+**Project by**: Mir Mozadded Alfeshani Murad
 
 Your CVD Risk Prediction project is now:
 

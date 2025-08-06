@@ -2,9 +2,9 @@
 
 <div align="center">
 
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/cvd-risk-prediction)](https://github.com/yourusername/cvd-risk-prediction/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/yourusername/cvd-risk-prediction)](https://github.com/yourusername/cvd-risk-prediction/network)
-[![GitHub issues](https://img.shields.io/github/issues/yourusername/cvd-risk-prediction)](https://github.com/yourusername/cvd-risk-prediction/issues)
+[![GitHub stars](https://img.shields.io/github/stars/mozaddedalfeshani/cvd-risk-prediction-ai)](https://github.com/mozaddedalfeshani/cvd-risk-prediction-ai/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/mozaddedalfeshani/cvd-risk-prediction-ai)](https://github.com/mozaddedalfeshani/cvd-risk-prediction-ai/network)
+[![GitHub issues](https://img.shields.io/github/issues/mozaddedalfeshani/cvd-risk-prediction-ai)](https://github.com/mozaddedalfeshani/cvd-risk-prediction-ai/issues)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **🎯 93.15% Accuracy • 🏥 Clinical-Grade • 🚀 Production-Ready**
@@ -14,6 +14,8 @@
 ## 🌟 Overview
 
 A comprehensive cardiovascular disease risk prediction system combining advanced machine learning with a modern web interface. This project demonstrates industry-standard architecture, achieving clinical-grade accuracy suitable for healthcare deployment.
+
+**Developed by**: Mir Mozadded Alfeshani Murad
 
 ## 🏗️ Architecture
 
@@ -62,8 +64,8 @@ cvd-risk-prediction/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/cvd-risk-prediction.git
-cd cvd-risk-prediction
+git clone https://github.com/mozaddedalfeshani/cvd-risk-prediction-ai.git
+cd cvd-risk-prediction-ai
 ```
 
 ### 2. Start the Backend API
@@ -216,6 +218,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
+- **Author**: Mir Mozadded Alfeshani Murad
 - Cardiovascular research community
 - Open-source ML libraries (scikit-learn, XGBoost, LightGBM)
 - Healthcare datasets and validation studies
@@ -223,16 +226,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 📧 Email: [your-email@domain.com](mailto:your-email@domain.com)
-- 💬 Issues: [GitHub Issues](https://github.com/yourusername/cvd-risk-prediction/issues)
-- 📖 Documentation: [Project Wiki](https://github.com/yourusername/cvd-risk-prediction/wiki)
+- 📧 Email: [mozaddedalfeshani@outlook.com](mailto:mozaddedalfeshani@outlook.com)
+- 💬 Issues: [GitHub Issues](https://github.com/mozaddedalfeshani/cvd-risk-prediction-ai/issues)
+- 📖 Documentation: [Project Wiki](https://github.com/mozaddedalfeshani/cvd-risk-prediction-ai/wiki)
 
 ---
 
 <div align="center">
 
-**🏆 Built with ❤️ for advancing healthcare through AI**
+**🏆 Built with ❤️ by Mir Mozadded Alfeshani Murad for advancing healthcare through AI**
 
-[⭐ Star this repository](https://github.com/yourusername/cvd-risk-prediction) if you found it helpful!
+[⭐ Star this repository](https://github.com/mozaddedalfeshani/cvd-risk-prediction-ai) if you found it helpful!
 
 </div>
