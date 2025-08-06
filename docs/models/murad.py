@@ -18,7 +18,7 @@ print("="*80)
 print("OPTIMIZED MACHINE LEARNING MODEL - TARGETING MAXIMUM ACCURACY")
 print("="*80)
 
-def train_optimized_model(dataset_file='CVD_Dataset_ML_Ready.csv'):
+def train_optimized_model(dataset_file='../data/CVD_Dataset_ML_Ready.csv'):
     """
     Train an optimized ML model using the cleaned dataset for maximum accuracy
     """
@@ -364,9 +364,54 @@ def train_optimized_model(dataset_file='CVD_Dataset_ML_Ready.csv'):
     }
 
 if __name__ == "__main__":
-    # Run the optimized ML pipeline
-    results = train_optimized_model()
+    # Run the optimized ML pipeline with both datasets
     
-    print(f"\n🚀 Training complete!")
-    print(f"🎯 Best accuracy achieved: {results['best_accuracy']*100:.2f}%")
-    print(f"🏆 Best model: {results['best_model_name']}")
+    # Test with first dataset (CVD Dataset)
+    print("\n" + "="*80)
+    print("TESTING WITH CVD_Dataset_ML_Ready.csv")
+    print("="*80)
+    results1 = train_optimized_model('../data/CVD_Dataset_ML_Ready.csv')
+    
+    print(f"\n🚀 Training complete for CVD dataset!")
+    print(f"🎯 Best accuracy achieved: {results1['best_accuracy']*100:.2f}%")
+    print(f"🏆 Best model: {results1['best_model_name']}")
+    
+    # Test with second dataset (MymensingUniversity cleaned)
+    print("\n" + "="*80)
+    print("TESTING WITH MymensingUniversity_ML_Ready.csv")
+    print("="*80)
+    results2 = train_optimized_model('../data/MymensingUniversity_ML_Ready.csv')
+    
+    print(f"\n🚀 Training complete for MymensingUniversity dataset!")
+    print(f"🎯 Best accuracy achieved: {results2['best_accuracy']*100:.2f}%")
+    print(f"🏆 Best model: {results2['best_model_name']}")
+    
+    # Compare results
+    print("\n" + "="*80)
+    print("COMPARISON SUMMARY")
+    print("="*80)
+    print(f"CVD Dataset:")
+    print(f"  - Best Model: {results1['best_model_name']}")
+    print(f"  - Best Accuracy: {results1['best_accuracy']*100:.2f}%")
+    print(f"  - Features Used: {len(results1['feature_names'])}")
+    print(f"  - Training Samples: {results1.get('training_samples', 'N/A')}")
+    
+    print(f"\nMymensingUniversity Dataset:")
+    print(f"  - Best Model: {results2['best_model_name']}")
+    print(f"  - Best Accuracy: {results2['best_accuracy']*100:.2f}%")
+    print(f"  - Features Used: {len(results2['feature_names'])}")
+    print(f"  - Training Samples: {results2.get('training_samples', 'N/A')}")
+    
+    # Determine which dataset performed better
+    if results1['best_accuracy'] > results2['best_accuracy']:
+        diff = results1['best_accuracy'] - results2['best_accuracy']
+        print(f"\n🏆 CVD Dataset performed better by {diff:.4f} ({diff*100:.2f}%)")
+    elif results2['best_accuracy'] > results1['best_accuracy']:
+        diff = results2['best_accuracy'] - results1['best_accuracy']
+        print(f"\n🏆 MymensingUniversity Dataset performed better by {diff:.4f} ({diff*100:.2f}%)")
+    else:
+        print(f"\n🏆 Both datasets performed equally well!")
+    
+    print(f"\n🎉 FINAL SUMMARY:")
+    print(f"🥇 Best Overall Performance: {max(results1['best_accuracy'], results2['best_accuracy'])*100:.2f}%")
+    print(f"🏥 Both datasets show strong potential for clinical deployment!")

@@ -12,7 +12,7 @@ print("="*60)
 
 # Load data
 print("Loading dataset...")
-df = pd.read_csv('CVD_Dataset_ML_Ready.csv')
+df = pd.read_csv('../data/CVD_Dataset_ML_Ready.csv')
 X = df.drop('CVD Risk Level', axis=1)
 y = df['CVD Risk Level']
 
