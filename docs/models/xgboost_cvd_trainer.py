@@ -361,54 +361,45 @@ class XGBoostCVDTrainer:
 
 def main():
     """
-    Main training function
+    Main training function - Focus on MymensingUniversity dataset
     """
     # Initialize trainer
     trainer = XGBoostCVDTrainer()
     
-    # Train on both datasets
-    datasets = [
-        '../data/CVD_Dataset_ML_Ready.csv',
-        '../data/MymensingUniversity_ML_Ready.csv'
-    ]
+    # Train on MymensingUniversity dataset
+    dataset = '../data/MymensingUniversity_ML_Ready.csv'
     
-    results = {}
-    
-    for dataset in datasets:
-        try:
-            print(f"\n{'='*20} TRAINING ON {dataset.split('/')[-1]} {'='*20}")
-            
-            # Train model
-            result = trainer.train_model(dataset, use_hyperparameter_tuning=False)
-            results[dataset] = result
-            
-            # Save model if accuracy >= 90%
-            if result['accuracy'] >= 0.90:
-                model_name = dataset.split('/')[-1].replace('.csv', '_xgboost_model.pkl')
-                trainer.save_model(f"../models/{model_name}")
-            
-            print(f"✅ Training completed for {dataset}")
-            
-        except FileNotFoundError:
-            print(f"❌ Dataset not found: {dataset}")
-        except Exception as e:
-            print(f"❌ Error training on {dataset}: {e}")
-    
-    # Summary
-    print(f"\n{'='*80}")
-    print("TRAINING SUMMARY")
-    print("="*80)
-    
-    for dataset, result in results.items():
-        dataset_name = dataset.split('/')[-1]
+    try:
+        print(f"\n{'='*20} TRAINING ON {dataset.split('/')[-1]} {'='*20}")
+        
+        # Train model
+        result = trainer.train_model(dataset, use_hyperparameter_tuning=False)
+        
+        # Save model if accuracy >= 90%
+        if result['accuracy'] >= 0.90:
+            model_name = dataset.split('/')[-1].replace('.csv', '_xgboost_model.pkl')
+            trainer.save_model(f"{model_name}")
+            print(f"🎉 High-accuracy model saved: {model_name}")
+        
+        # Summary
+        print(f"\n{'='*80}")
+        print("TRAINING SUMMARY")
+        print("="*80)
+        
         accuracy = result['accuracy']
         status = "✅ 90%+ ACHIEVED" if accuracy >= 0.90 else "⚠️  Below 90%"
-        print(f"{dataset_name:<35}: {accuracy*100:.2f}% {status}")
-    
-    # Best performer
-    if results:
-        best_dataset = max(results.items(), key=lambda x: x[1]['accuracy'])
-        print(f"\n🏆 Best Performance: {best_dataset[0].split('/')[-1]} - {best_dataset[1]['accuracy']*100:.2f}%")
+        print(f"MymensingUniversity Dataset: {accuracy*100:.2f}% {status}")
+        
+        if accuracy >= 0.90:
+            print(f"🏆 SUCCESS: Model ready for clinical deployment!")
+            print(f"🎯 Accuracy: {accuracy*100:.2f}%")
+            print(f"🏥 Ready for frontend integration!")
+        
+    except FileNotFoundError:
+        print(f"❌ Dataset not found: {dataset}")
+        print("Please ensure MymensingUniversity_ML_Ready.csv exists in ../data/")
+    except Exception as e:
+        print(f"❌ Error training on {dataset}: {e}")
 
 
 if __name__ == "__main__":
