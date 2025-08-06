@@ -1,1 +1,100 @@
- 
+ {
+   "test_cases": [
+     {
+       "stage": "Low Risk",
+       "data": {
+         "Abdominal Circumference (cm)": 75.0,
+         "Age": 28,
+         "BMI": 22.5,
+         "Blood Pressure Category": 1,
+         "CVD Risk Score": 8.0,
+         "Diabetes Status": 0,
+         "Diastolic BP": 72.0,
+         "Estimated LDL (mg/dL)": 95.0,
+         "Family History of CVD": 0,
+         "Fasting Blood Sugar (mg/dL)": 85.0,
+         "HDL (mg/dL)": 70.0,
+         "Height (m)": 1.75,
+         "Physical Activity Level": 3,
+         "Sex": 0,
+         "Smoking Status": 0,
+         "Systolic BP": 110.0,
+         "Total Cholesterol (mg/dL)": 175.0,
+         "Waist-to-Height Ratio": 0.43,
+         "Weight (kg)": 69.0
+       }
+     },
+     {
+       "stage": "Medium Risk",
+       "data": {
+         "Abdominal Circumference (cm)": 88.0,
+         "Age": 45,
+         "BMI": 27.0,
+         "Blood Pressure Category": 2,
+         "CVD Risk Score": 20.0,
+         "Diabetes Status": 0,
+         "Diastolic BP": 85.0,
+         "Estimated LDL (mg/dL)": 130.0,
+         "Family History of CVD": 1,
+         "Fasting Blood Sugar (mg/dL)": 102.0,
+         "HDL (mg/dL)": 50.0,
+         "Height (m)": 1.7,
+         "Physical Activity Level": 1,
+         "Sex": 1,
+         "Smoking Status": 1,
+         "Systolic BP": 135.0,
+         "Total Cholesterol (mg/dL)": 210.0,
+         "Waist-to-Height Ratio": 0.52,
+         "Weight (kg)": 78.0
+       }
+     },
+     {
+       "stage": "High Risk",
+       "data": {
+         "Abdominal Circumference (cm)": 100.0,
+         "Age": 58,
+         "BMI": 31.5,
+         "Blood Pressure Category": 3,
+         "CVD Risk Score": 36.0,
+         "Diabetes Status": 1,
+         "Diastolic BP": 90.0,
+         "Estimated LDL (mg/dL)": 155.0,
+         "Family History of CVD": 1,
+         "Fasting Blood Sugar (mg/dL)": 130.0,
+         "HDL (mg/dL)": 40.0,
+         "Height (m)": 1.68,
+         "Physical Activity Level": 0,
+         "Sex": 1,
+         "Smoking Status": 1,
+         "Systolic BP": 150.0,
+         "Total Cholesterol (mg/dL)": 240.0,
+         "Waist-to-Height Ratio": 0.6,
+         "Weight (kg)": 89.0
+       }
+     },
+     {
+       "stage": "Very High Risk",
+       "data": {
+         "Abdominal Circumference (cm)": 115.0,
+         "Age": 65,
+         "BMI": 36.0,
+         "Blood Pressure Category": 4,
+         "CVD Risk Score": 52.0,
+         "Diabetes Status": 1,
+         "Diastolic BP": 105.0,
+         "Estimated LDL (mg/dL)": 180.0,
+         "Family History of CVD": 1,
+         "Fasting Blood Sugar (mg/dL)": 165.0,
+         "HDL (mg/dL)": 30.0,
+         "Height (m)": 1.62,
+         "Physical Activity Level": 0,
+         "Sex": 1,
+         "Smoking Status": 1,
+         "Systolic BP": 180.0,
+         "Total Cholesterol (mg/dL)": 280.0,
+         "Waist-to-Height Ratio": 0.71,
+         "Weight (kg)": 95.0
+       }
+     }
+   ]
+ }

@@ -1,0 +1,21 @@
+{
+  "Abdominal Circumference (cm)": 100.0,
+  "Age": 58,
+  "BMI": 31.5,
+  "Blood Pressure Category": 3,
+  "CVD Risk Score": 36.0,
+  "Diabetes Status": 1,
+  "Diastolic BP": 90.0,
+  "Estimated LDL (mg/dL)": 155.0,
+  "Family History of CVD": 1,
+  "Fasting Blood Sugar (mg/dL)": 130.0,
+  "HDL (mg/dL)": 40.0,
+  "Height (m)": 1.68,
+  "Physical Activity Level": 0,
+  "Sex": 1,
+  "Smoking Status": 1,
+  "Systolic BP": 150.0,
+  "Total Cholesterol (mg/dL)": 240.0,
+  "Waist-to-Height Ratio": 0.6,
+  "Weight (kg)": 89.0
+}
