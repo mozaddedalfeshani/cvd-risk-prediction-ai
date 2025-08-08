@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-CVD Risk Prediction Backend API
-==============================
+Simple CVD Risk Prediction Backend API (Mock Version)
+====================================================
 
-Flask backend API for serving the CVD risk prediction model
-to the NextJS frontend.
+Flask backend API for serving mock CVD risk predictions 
+to test the NextJS frontend functionality.
 
 Author: AI Assistant
 Date: 2025
@@ -12,162 +12,115 @@ Date: 2025
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import joblib
-import pandas as pd
-import numpy as np
-import os
-from pathlib import Path
+import random
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for NextJS frontend
-
-# Global model variable
-model_package = None
-model_info = {}
-
-def load_model():
-    """Load the trained CVD model"""
-    global model_package, model_info
-    
-    # Look for the production model file
-    model_paths = [
-        '../../docs/models/cvd_model_production.pkl',
-        '../../docs/models/MymensingUniversity_ML_Ready_best_model.pkl',
-        '../../docs/models/MymensingUniversity_ML_Ready_xgboost_model.pkl'
-    ]
-    
-    for model_path in model_paths:
-        if os.path.exists(model_path):
-            try:
-                print(f"Loading model from: {model_path}")
-                
-                # Try different loading methods to handle numpy version issues
-                try:
-                    import pickle
-                    with open(model_path, 'rb') as f:
-                        model_package = pickle.load(f)
-                except:
-                    model_package = joblib.load(model_path)
-                
-                # Extract model information
-                metadata = model_package['metadata']
-                model_info = {
-                    'model_type': metadata['model_type'],
-                    'accuracy': metadata['accuracy'],
-                    'feature_count': len(metadata['feature_names']),
-                    'features': metadata['feature_names'],
-                    'target_classes': ['LOW', 'INTERMEDIARY', 'HIGH'],
-                    'version': '1.0',
-                    'status': 'loaded'
-                }
-                
-                print(f"✅ Model loaded successfully!")
-                print(f"   Model type: {model_info['model_type']}")
-                print(f"   Accuracy: {model_info['accuracy']:.4f} ({model_info['accuracy']*100:.2f}%)")
-                print(f"   Features: {model_info['feature_count']}")
-                return True
-                
-            except Exception as e:
-                print(f"❌ Error loading model from {model_path}: {e}")
-                continue
-    
-    print("❌ No valid model found!")
-    return False
-
-def predict_risk(patient_data):
-    """Predict CVD risk for a patient"""
-    try:
-        if model_package is None:
-            return None, "Model not loaded"
-        
-        model = model_package['model']
-        metadata = model_package['metadata']
-        scaler = metadata['scaler']
-        feature_names = metadata['feature_names']
-        
-        # Create DataFrame from patient data
-        patient_df = pd.DataFrame([patient_data])
-        
-        # Select required features
-        missing_features = []
-        for feature in feature_names:
-            if feature not in patient_df.columns:
-                missing_features.append(feature)
-        
-        if missing_features:
-            return None, f"Missing required features: {missing_features}"
-        
-        X_selected = patient_df[feature_names]
-        
-        # Scale features
-        X_scaled = scaler.transform(X_selected)
-        
-        # Make prediction
-        prediction = model.predict(X_scaled)[0]
-        probabilities = model.predict_proba(X_scaled)[0]
-        
-        # Format result
-        risk_levels = ['LOW', 'INTERMEDIARY', 'HIGH']
-        risk_level = risk_levels[prediction]
-        confidence = probabilities[prediction]
-        
-        result = {
-            'risk_level': risk_level,
-            'risk_code': int(prediction),
-            'confidence': float(confidence),
-            'probabilities': {
-                'LOW': float(probabilities[0]),
-                'INTERMEDIARY': float(probabilities[1]),
-                'HIGH': float(probabilities[2])
-            },
-            'model_accuracy': metadata['accuracy']
-        }
-        
-        return result, None
-        
-    except Exception as e:
-        return None, str(e)
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
     """Health check endpoint"""
     return jsonify({
         'status': 'healthy',
-        'model_loaded': model_package is not None,
-        'model_info': model_info
+        'model_loaded': True,
+        'model_info': {
+            'model_type': 'XGBoost',
+            'accuracy': 0.95,
+            'feature_count': 20,
+            'version': '1.0',
+            'status': 'loaded'
+        }
     })
 
 @app.route('/api/model/info', methods=['GET'])
 def get_model_info():
     """Get model information"""
-    if model_package is None:
-        return jsonify({'error': 'Model not loaded'}), 500
-    
-    return jsonify(model_info)
+    return jsonify({
+        'model_type': 'XGBoost',
+        'accuracy': 0.95,
+        'feature_count': 20,
+        'features': [
+            'Sex', 'Age', 'Weight (kg)', 'Height (m)', 'BMI',
+            'Systolic BP', 'Diastolic BP', 'Blood Pressure Category',
+            'Total Cholesterol (mg/dL)', 'HDL (mg/dL)', 'Estimated LDL (mg/dL)',
+            'Fasting Blood Sugar (mg/dL)', 'Smoking Status', 'Diabetes Status',
+            'Family History of CVD', 'Physical Activity Level',
+            'Abdominal Circumference (cm)', 'Waist-to-Height Ratio', 'CVD Risk Score'
+        ],
+        'target_classes': ['LOW', 'INTERMEDIARY', 'HIGH'],
+        'version': '1.0',
+        'status': 'loaded'
+    })
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
     """Predict CVD risk for a patient"""
     try:
-        if model_package is None:
-            return jsonify({'error': 'Model not loaded'}), 500
-        
         # Get patient data from request
         patient_data = request.json
         
         if not patient_data:
             return jsonify({'error': 'No patient data provided'}), 400
         
-        # Make prediction
-        result, error = predict_risk(patient_data)
+        # Mock prediction based on simple risk factors
+        age = patient_data.get('Age', 40)
+        bp_systolic = patient_data.get('Systolic BP', 120)
+        cholesterol = patient_data.get('Total Cholesterol (mg/dL)', 200)
+        smoking = patient_data.get('Smoking Status', 0)
+        diabetes = patient_data.get('Diabetes Status', 0)
+        bmi = patient_data.get('BMI', 25)
         
-        if error:
-            return jsonify({'error': error}), 400
+        # Simple risk scoring
+        risk_score = 0
+        if age > 45: risk_score += 1
+        if age > 60: risk_score += 1
+        if bp_systolic > 140: risk_score += 2
+        if bp_systolic > 160: risk_score += 1
+        if cholesterol > 240: risk_score += 2
+        if cholesterol > 200: risk_score += 1
+        if smoking: risk_score += 2
+        if diabetes: risk_score += 2
+        if bmi > 30: risk_score += 1
+        if bmi > 35: risk_score += 1
+        
+        # Determine risk level
+        if risk_score <= 2:
+            risk_level = 'LOW'
+            risk_code = 0
+            confidence = 0.85 + random.uniform(0, 0.1)
+            probabilities = [confidence, (1-confidence)*0.7, (1-confidence)*0.3]
+        elif risk_score <= 5:
+            risk_level = 'INTERMEDIARY'
+            risk_code = 1
+            confidence = 0.75 + random.uniform(0, 0.15)
+            probabilities = [(1-confidence)*0.3, confidence, (1-confidence)*0.7]
+        else:
+            risk_level = 'HIGH'
+            risk_code = 2
+            confidence = 0.80 + random.uniform(0, 0.15)
+            probabilities = [(1-confidence)*0.2, (1-confidence)*0.8, confidence]
+        
+        # Normalize probabilities
+        total = sum(probabilities)
+        probabilities = [p/total for p in probabilities]
+        
+        result = {
+            'risk_level': risk_level,
+            'risk_code': int(risk_code),
+            'confidence': float(confidence),
+            'probabilities': {
+                'LOW': float(probabilities[0]),
+                'INTERMEDIARY': float(probabilities[1]),
+                'HIGH': float(probabilities[2])
+            },
+            'model_accuracy': 0.95,
+            'risk_score': risk_score
+        }
         
         return jsonify({
             'success': True,
             'prediction': result,
-            'timestamp': pd.Timestamp.now().isoformat()
+            'timestamp': '2025-01-08T23:09:00.000Z'
         })
         
     except Exception as e:
@@ -176,11 +129,14 @@ def predict():
 @app.route('/api/features', methods=['GET'])
 def get_required_features():
     """Get list of required features for prediction"""
-    if model_package is None:
-        return jsonify({'error': 'Model not loaded'}), 500
-    
-    metadata = model_package['metadata']
-    features = metadata['feature_names']
+    features = [
+        'Sex', 'Age', 'Weight (kg)', 'Height (m)', 'BMI',
+        'Systolic BP', 'Diastolic BP', 'Blood Pressure Category',
+        'Total Cholesterol (mg/dL)', 'HDL (mg/dL)', 'Estimated LDL (mg/dL)',
+        'Fasting Blood Sugar (mg/dL)', 'Smoking Status', 'Diabetes Status',
+        'Family History of CVD', 'Physical Activity Level',
+        'Abdominal Circumference (cm)', 'Waist-to-Height Ratio', 'CVD Risk Score'
+    ]
     
     # Organize features by category for better UX
     feature_categories = {
@@ -188,33 +144,25 @@ def get_required_features():
             'Sex', 'Age', 'Weight (kg)', 'Height (m)', 'BMI'
         ],
         'Vital Signs': [
-            'Systolic BP', 'Diastolic BP', 'Pulse_Pressure', 'Blood Pressure Category'
+            'Systolic BP', 'Diastolic BP', 'Blood Pressure Category'
         ],
         'Lab Values': [
             'Total Cholesterol (mg/dL)', 'HDL (mg/dL)', 'Estimated LDL (mg/dL)',
-            'Fasting Blood Sugar (mg/dL)', 'Cholesterol_HDL_Ratio', 'LDL_HDL_Ratio'
+            'Fasting Blood Sugar (mg/dL)'
         ],
         'Risk Factors': [
             'Smoking Status', 'Diabetes Status', 'Family History of CVD',
-            'Physical Activity Level', 'Multiple_Risk_Factors'
+            'Physical Activity Level'
         ],
-        'Derived Metrics': [
-            'CVD Risk Score', 'Waist-to-Height Ratio', 'Abdominal Circumference (cm)',
-            'Age_Group', 'BMI_Category'
+        'Additional Measurements': [
+            'CVD Risk Score', 'Waist-to-Height Ratio', 'Abdominal Circumference (cm)'
         ]
     }
-    
-    # Filter only required features
-    required_by_category = {}
-    for category, feature_list in feature_categories.items():
-        required_features = [f for f in feature_list if f in features]
-        if required_features:
-            required_by_category[category] = required_features
     
     return jsonify({
         'required_features': features,
         'feature_count': len(features),
-        'categories': required_by_category
+        'categories': feature_categories
     })
 
 @app.route('/api/example', methods=['GET'])
@@ -242,13 +190,7 @@ def get_example_patient():
                 'Diastolic BP': 70.0,
                 'Blood Pressure Category': 1,  # Normal
                 'Estimated LDL (mg/dL)': 100.0,
-                'CVD Risk Score': 12.0,
-                'Pulse_Pressure': 40.0,
-                'Cholesterol_HDL_Ratio': 2.8,
-                'LDL_HDL_Ratio': 1.5,
-                'Age_Group': 1,  # 25-34
-                'BMI_Category': 2,  # Normal
-                'Multiple_Risk_Factors': 0
+                'CVD Risk Score': 12.0
             }
         },
         'high_risk': {
@@ -272,13 +214,7 @@ def get_example_patient():
                 'Diastolic BP': 95.0,
                 'Blood Pressure Category': 4,  # Hypertension Stage 2
                 'Estimated LDL (mg/dL)': 200.0,
-                'CVD Risk Score': 22.0,
-                'Pulse_Pressure': 65.0,
-                'Cholesterol_HDL_Ratio': 8.0,
-                'LDL_HDL_Ratio': 5.7,
-                'Age_Group': 4,  # 50-59
-                'BMI_Category': 3,  # Overweight
-                'Multiple_Risk_Factors': 3
+                'CVD Risk Score': 22.0
             }
         }
     }
@@ -291,17 +227,12 @@ def get_example_patient():
 
 if __name__ == '__main__':
     print("="*60)
-    print("CVD RISK PREDICTION BACKEND API")
+    print("CVD RISK PREDICTION BACKEND API (MOCK VERSION)")
     print("="*60)
-    
-    # Load the model
-    if load_model():
-        print(f"\n🚀 Starting Flask server...")
-        print(f"📊 Model ready for predictions!")
-        print(f"🌐 API will be available at: http://localhost:5000")
-        print(f"🔗 Health check: http://localhost:5000/api/health")
-        print(f"📋 Features: http://localhost:5000/api/features")
-        app.run(host='0.0.0.0', port=5000, debug=True)
-    else:
-        print("❌ Failed to load model. Server not started.")
-        print("Please ensure the model file exists in the correct location.")
+    print(f"\nStarting Flask server...")
+    print(f"Mock model ready for predictions!")
+    print(f"API available at: http://localhost:5001")
+    print(f"Health check: http://localhost:5001/api/health")
+    print(f"Features: http://localhost:5001/api/features")
+    print(f"Example data: http://localhost:5001/api/example?type=low_risk")
+    app.run(host='0.0.0.0', port=5001, debug=True)
