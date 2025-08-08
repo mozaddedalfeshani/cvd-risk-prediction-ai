@@ -370,7 +370,7 @@ if __name__ == "__main__":
     print("\n" + "="*80)
     print("TESTING WITH CVD_Dataset_ML_Ready.csv")
     print("="*80)
-    results1 = train_optimized_model('../data/CVD_Dataset_ML_Ready.csv')
+    results1 = train_optimized_model('../../data/CVD_Dataset_ML_Ready.csv')
     
     print(f"\n🚀 Training complete for CVD dataset!")
     print(f"🎯 Best accuracy achieved: {results1['best_accuracy']*100:.2f}%")
@@ -380,7 +380,7 @@ if __name__ == "__main__":
     print("\n" + "="*80)
     print("TESTING WITH MymensingUniversity_ML_Ready.csv")
     print("="*80)
-    results2 = train_optimized_model('../data/MymensingUniversity_ML_Ready.csv')
+    results2 = train_optimized_model('../../data/raw/MymensingUniversity_ML_Ready.csv')
     
     print(f"\n🚀 Training complete for MymensingUniversity dataset!")
     print(f"🎯 Best accuracy achieved: {results2['best_accuracy']*100:.2f}%")
