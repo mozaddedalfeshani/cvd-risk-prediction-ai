@@ -1,0 +1,27 @@
+,dtype,missing,unique
+Sex,int64,0,2
+Age,int64,0,55
+Weight (kg),float64,0,1020
+Height (m),float64,0,374
+BMI,float64,0,787
+Abdominal Circumference (cm),float64,0,865
+Total Cholesterol (mg/dL),int64,0,201
+HDL (mg/dL),int64,0,60
+Fasting Blood Sugar (mg/dL),int64,0,128
+Smoking Status,int64,0,2
+Diabetes Status,int64,0,2
+Physical Activity Level,int64,0,3
+Family History of CVD,int64,0,2
+CVD Risk Level,int64,0,3
+Waist-to-Height Ratio,float64,0,332
+Systolic BP,int64,0,90
+Diastolic BP,int64,0,60
+Blood Pressure Category,int64,0,4
+Estimated LDL (mg/dL),int64,0,240
+CVD Risk Score,float64,0,1059
+Pulse_Pressure,int64,0,113
+Cholesterol_HDL_Ratio,float64,0,1301
+LDL_HDL_Ratio,float64,0,1319
+Age_Group,int64,0,5
+BMI_Category,int64,0,4
+Multiple_Risk_Factors,int64,0,4
