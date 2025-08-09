@@ -1,4 +1,4 @@
-# 🎯 CVD Risk Prediction - Accuracy Validation Report
+# 🎯 CVD Risk Prediction - Accuracy Validation Report on Readme
 
 ## 📊 Executive Summary
 
