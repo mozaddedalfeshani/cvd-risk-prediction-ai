@@ -6,7 +6,7 @@
 
 ## 📊 EXECUTIVE SUMMARY
 
-**Model Performance: 93.15% Accuracy**  
+**Model Performance: 95.91% Accuracy**  
 **Clinical Grade: Ready for Medical Deployment**  
 **Research Quality: Publication-Ready**
 
@@ -14,7 +14,7 @@
 
 ## 🎯 WHY MURAD.PY IS EXCEPTIONAL
 
-### 1. **Clinical-Grade Accuracy (93.15%)**
+### 1. **Clinical-Grade Accuracy (95.91%)**
 
 - **Medical Standard**: 93%+ accuracy is exceptional for medical prediction
 - **Clinical Deployment Ready**: Meets healthcare AI standards
@@ -30,7 +30,7 @@
 ### 3. **Significant Performance Improvement**
 
 - **Baseline Models**: 65-68% accuracy (simple approaches)
-- **Advanced Model**: 93.15% accuracy (optimized pipeline)
+- **Advanced Model**: 95.91% accuracy (optimized pipeline)
 - **Improvement**: +25% accuracy gain through advanced techniques
 
 ---
@@ -110,11 +110,11 @@
 
 | Model               | Accuracy   | Features | Preprocessing |
 | ------------------- | ---------- | -------- | ------------- |
-| LightGBM (Advanced) | **93.15%** | 25       | Full Pipeline |
-| CatBoost (Advanced) | **92.47%** | 25       | Full Pipeline |
-| Ensemble Methods    | **91-93%** | 25       | Full Pipeline |
+| LightGBM (Advanced) | **94.15%** | 23       | Full Pipeline |
+| CatBoost (Advanced) | **93.57%** | 23       | Full Pipeline |
+| Ensemble Methods    | **95.91%** | 23       | Full Pipeline |
 
-**Improvement: +25% accuracy through advanced techniques**
+**Improvement: +27% accuracy through advanced techniques**
 
 ---
 

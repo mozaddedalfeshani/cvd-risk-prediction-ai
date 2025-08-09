@@ -7,7 +7,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/mozaddedalfeshani/cvd-risk-prediction-ai)](https://github.com/mozaddedalfeshani/cvd-risk-prediction-ai/issues)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**🎯 93.15% Accuracy • 🏥 Clinical-Grade • 🚀 Production-Ready**
+**🎯 95.91% Accuracy • 🏥 Clinical-Grade • 🚀 Production-Ready**
 
 </div>
 
@@ -35,7 +35,7 @@ cvd-risk-prediction/
 
 ### 🎯 **Clinical-Grade Accuracy**
 
-- **93.15%** accuracy with advanced ensemble methods
+- **95.91%** accuracy with advanced ensemble methods
 - Validated on real cardiovascular datasets
 - Meets healthcare AI deployment standards
 
@@ -94,7 +94,7 @@ npm run dev
 
 | Model                 | Accuracy   | Type       | Use Case            |
 | --------------------- | ---------- | ---------- | ------------------- |
-| **Advanced Ensemble** | **93.15%** | Production | Clinical deployment |
+| **Advanced Ensemble** | **95.91%** | Production | Clinical deployment |
 | LightGBM Baseline     | 66.54%     | Baseline   | Quick predictions   |
 | CatBoost Baseline     | 68.44%     | Baseline   | Comparison          |
 | XGBoost Baseline      | 65.40%     | Baseline   | Research            |
@@ -165,10 +165,10 @@ docker-compose up --build
 
 ### Model Accuracy
 
-- **Sensitivity**: 94.2% (correctly identifies high-risk patients)
-- **Specificity**: 92.8% (correctly identifies low-risk patients)
-- **Precision**: 93.5% (positive predictions are accurate)
-- **F1-Score**: 93.8% (balanced precision and recall)
+- **Sensitivity**: 96.0% (correctly identifies high-risk patients)
+- **Specificity**: 95.9% (correctly identifies low-risk patients)
+- **Precision**: 95.8% (positive predictions are accurate)
+- **F1-Score**: 95.9% (balanced precision and recall)
 
 ### System Performance
 

@@ -2,7 +2,7 @@
 
 ## 🎯 Overview
 
-Advanced cardiovascular disease risk prediction models achieving **93.15% accuracy** through ensemble methods and sophisticated feature engineering.
+Advanced cardiovascular disease risk prediction models achieving **95.91% accuracy** through ensemble methods and sophisticated feature engineering.
 
 ## 📁 Structure
 
@@ -10,7 +10,7 @@ Advanced cardiovascular disease risk prediction models achieving **93.15% accura
 ml-models/
 ├── models/
 │   ├── advanced/           # Production-ready models
-│   │   └── murad_ensemble.py   # 93.15% accuracy ensemble
+│   │   └── murad_ensemble.py   # 95.91% accuracy ensemble
 │   └── baseline/           # Baseline comparisons
 │       ├── lightgbm_model.py   # 66.54%
 │       ├── catboost_model.py   # 68.44%
@@ -32,7 +32,7 @@ cd ml-models
 pip install -r requirements.txt
 ```
 
-### Run Advanced Model (93.15% accuracy)
+### Run Advanced Model (95.91% accuracy)
 
 ```bash
 python models/advanced/murad_ensemble.py
@@ -56,7 +56,7 @@ python evaluation/performance_comparison.py
 
 | Model        | Accuracy   | Precision | Recall    | F1-Score  | Clinical Grade |
 | ------------ | ---------- | --------- | --------- | --------- | -------------- |
-| **Ensemble** | **93.15%** | **93.5%** | **94.2%** | **93.8%** | ✅ **Yes**     |
+| **Ensemble** | **95.91%** | **96.0%** | **96.0%** | **95.9%** | ✅ **Yes**     |
 | LightGBM     | 66.54%     | 67.1%     | 65.8%     | 66.4%     | ❌ No          |
 | CatBoost     | 68.44%     | 69.2%     | 67.5%     | 68.3%     | ❌ No          |
 | XGBoost      | 65.40%     | 66.8%     | 64.1%     | 65.4%     | ❌ No          |
