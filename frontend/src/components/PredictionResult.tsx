@@ -3,15 +3,31 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface PredictionResult {
-  risk_level: string;
-  risk_code: number;
-  confidence: number;
-  probabilities: {
-    LOW: number;
-    INTERMEDIARY: number;
-    HIGH: number;
+  model_used: {
+    type: string;
+    name: string;
+    accuracy: number;
+    features_used: number;
   };
-  model_accuracy: number;
+  prediction: {
+    risk_level: string;
+    risk_code: number;
+    confidence: number;
+    probabilities: {
+      LOW: number;
+      INTERMEDIARY: number;
+      HIGH: number;
+    };
+  };
+  clinical_interpretation: {
+    risk_category: string;
+    confidence_level: string;
+    recommendations: {
+      recommendation: string;
+      follow_up: string;
+      lifestyle: string;
+    };
+  };
 }
 
 interface PredictionResultProps {
@@ -19,6 +35,8 @@ interface PredictionResultProps {
 }
 
 export default function PredictionResult({ prediction }: PredictionResultProps) {
+  const { model_used, prediction: predictionResult, clinical_interpretation } = prediction;
+  
   const getRiskColor = (riskLevel: string) => {
     switch (riskLevel) {
       case 'LOW':
@@ -95,21 +113,21 @@ export default function PredictionResult({ prediction }: PredictionResultProps) 
   return (
     <div className="space-y-6">
       {/* Main Result Card */}
-      <Card className={`border-2 ${getRiskColor(prediction.risk_level)}`}>
+      <Card className={`border-2 ${getRiskColor(predictionResult.risk_level)}`}>
         <CardHeader>
           <CardTitle className="flex items-center gap-3 text-2xl">
-            <span className="text-3xl">{getRiskIcon(prediction.risk_level)}</span>
+            <span className="text-3xl">{getRiskIcon(predictionResult.risk_level)}</span>
             <div>
-              <div className={`text-xl font-bold ${getRiskColor(prediction.risk_level)}`}>
-                {prediction.risk_level} RISK
+              <div className={`text-xl font-bold ${getRiskColor(predictionResult.risk_level)}`}>
+                {predictionResult.risk_level} RISK
               </div>
               <div className="text-sm font-normal text-gray-600">
-                Confidence: {(prediction.confidence * 100).toFixed(1)}%
+                Confidence: {(predictionResult.confidence * 100).toFixed(1)}%
               </div>
             </div>
           </CardTitle>
           <CardDescription className="text-base">
-            {getRiskDescription(prediction.risk_level)}
+            {getRiskDescription(predictionResult.risk_level)}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -124,13 +142,13 @@ export default function PredictionResult({ prediction }: PredictionResultProps) 
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {Object.entries(prediction.probabilities).map(([level, probability]) => (
+            {Object.entries(predictionResult.probabilities).map(([level, probability]) => (
               <div key={level} className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className={`font-medium ${level === prediction.risk_level ? 'font-bold' : ''}`}>
+                  <span className={`font-medium ${level === predictionResult.risk_level ? 'font-bold' : ''}`}>
                     {getRiskIcon(level)} {level} Risk
                   </span>
-                  <span className={`${level === prediction.risk_level ? 'font-bold' : ''}`}>
+                  <span className={`${level === predictionResult.risk_level ? 'font-bold' : ''}`}>
                     {(probability * 100).toFixed(1)}%
                   </span>
                 </div>
@@ -139,12 +157,42 @@ export default function PredictionResult({ prediction }: PredictionResultProps) 
                     className={`h-3 rounded-full transition-all duration-500 ${
                       level === 'LOW' ? 'bg-green-500' :
                       level === 'INTERMEDIARY' ? 'bg-yellow-500' : 'bg-red-500'
-                    } ${level === prediction.risk_level ? 'ring-2 ring-offset-1 ring-gray-400' : ''}`}
+                    } ${level === predictionResult.risk_level ? 'ring-2 ring-offset-1 ring-gray-400' : ''}`}
                     style={{ width: `${probability * 100}%` }}
                   />
                 </div>
               </div>
             ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Model Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Model Information</CardTitle>
+          <CardDescription>
+            Details about the prediction model used
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <div className="text-sm text-gray-600">Model Used</div>
+              <div className="font-semibold">{model_used.name}</div>
+            </div>
+            <div>
+              <div className="text-sm text-gray-600">Accuracy</div>
+              <div className="font-semibold text-green-600">{(model_used.accuracy * 100).toFixed(2)}%</div>
+            </div>
+            <div>
+              <div className="text-sm text-gray-600">Features Analyzed</div>
+              <div className="font-semibold">{model_used.features_used}</div>
+            </div>
+            <div>
+              <div className="text-sm text-gray-600">Model Type</div>
+              <div className="font-semibold">{model_used.type === 'full' ? 'Comprehensive' : 'Quick Assessment'}</div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -159,7 +207,7 @@ export default function PredictionResult({ prediction }: PredictionResultProps) 
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {getRecommendations(prediction.risk_level).map((recommendation, index) => (
+            {getRecommendations(predictionResult.risk_level).map((recommendation, index) => (
               <div key={index} className="flex items-start gap-3">
                 <span className="text-blue-500 font-bold mt-1">•</span>
                 <span>{recommendation}</span>
@@ -181,7 +229,7 @@ export default function PredictionResult({ prediction }: PredictionResultProps) 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             <div className="bg-blue-50 p-4 rounded-lg">
               <div className="text-2xl font-bold text-blue-600">
-                {(prediction.model_accuracy * 100).toFixed(1)}%
+                {(model_used.accuracy * 100).toFixed(1)}%
               </div>
               <div className="text-sm text-gray-600">Model Accuracy</div>
             </div>

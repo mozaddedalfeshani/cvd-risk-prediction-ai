@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/card";
 
 interface CVDAssessmentFormProps {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: { model_type?: 'full'; patient_data: Record<string, number|string> }) => void;
   loading: boolean;
   error: string | null;
 }
@@ -30,7 +30,7 @@ export default function CVDAssessmentForm({
   loading,
   error,
 }: CVDAssessmentFormProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Record<string, string>>({
     // Demographics
     Sex: "",
     Age: "",
@@ -109,7 +109,7 @@ export default function CVDAssessmentForm({
   };
 
   const processFormData = () => {
-    const processed = { ...formData };
+    const processed: Record<string, number|string> = { ...formData };
 
     // Convert string values to numbers
     const numericFields = [
@@ -129,22 +129,23 @@ export default function CVDAssessmentForm({
     ];
 
     numericFields.forEach((field) => {
-      if (processed[field]) {
-        processed[field] = parseFloat(processed[field]);
+      const val = processed[field];
+      if (val !== undefined && val !== null && val !== "") {
+        processed[field] = typeof val === "number" ? val : parseFloat(val as string);
       }
     });
 
     // Calculate derived fields
-    const weight = processed["Weight (kg)"];
-    const height = processed["Height (m)"];
-    const systolic = processed["Systolic BP"];
-    const diastolic = processed["Diastolic BP"];
-    const total_chol = processed["Total Cholesterol (mg/dL)"];
-    const hdl = processed["HDL (mg/dL)"];
-    const ldl = processed["Estimated LDL (mg/dL)"];
-    const age = processed["Age"];
-    const bmi = processed["BMI"];
-    const abdominal = processed["Abdominal Circumference (cm)"];
+    const weight = processed["Weight (kg)"] as number | undefined;
+    const height = processed["Height (m)"] as number | undefined;
+    const systolic = processed["Systolic BP"] as number | undefined;
+    const diastolic = processed["Diastolic BP"] as number | undefined;
+    const total_chol = processed["Total Cholesterol (mg/dL)"] as number | undefined;
+    const hdl = processed["HDL (mg/dL)"] as number | undefined;
+    const ldl = processed["Estimated LDL (mg/dL)"] as number | undefined;
+    const age = processed["Age"] as number | undefined;
+    const bmi = processed["BMI"] as number | undefined;
+    const abdominal = processed["Abdominal Circumference (cm)"] as number | undefined;
 
     // Auto-calculate derived metrics
     if (weight && height) {
@@ -199,7 +200,7 @@ export default function CVDAssessmentForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const processedData = processFormData();
-    onSubmit(processedData);
+    onSubmit({ model_type: 'full', patient_data: processedData });
   };
 
   // Step configuration for wizard UI
@@ -302,7 +303,7 @@ export default function CVDAssessmentForm({
 
       if (data.data) {
         // Convert the example data to form format
-        const exampleFormData: any = {};
+        const exampleFormData: Record<string, string> = {};
         Object.entries(data.data).forEach(([key, value]) => {
           exampleFormData[key] = value?.toString() || "";
         });

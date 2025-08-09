@@ -9,19 +9,35 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import CVDAssessmentForm from "@/components/CVDAssessmentForm";
+import CVDAssessmentFormDual from "@/components/CVDAssessmentFormDual";
 import PredictionResult from "@/components/PredictionResult";
 
 interface PredictionResult {
-  risk_level: string;
-  risk_code: number;
-  confidence: number;
-  probabilities: {
-    LOW: number;
-    INTERMEDIARY: number;
-    HIGH: number;
+  model_used: {
+    type: string;
+    name: string;
+    accuracy: number;
+    features_used: number;
   };
-  model_accuracy: number;
+  prediction: {
+    risk_level: string;
+    risk_code: number;
+    confidence: number;
+    probabilities: {
+      LOW: number;
+      INTERMEDIARY: number;
+      HIGH: number;
+    };
+  };
+  clinical_interpretation: {
+    risk_category: string;
+    confidence_level: string;
+    recommendations: {
+      recommendation: string;
+      follow_up: string;
+      lifestyle: string;
+    };
+  };
 }
 
 export default function Home() {
@@ -29,7 +45,9 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handlePrediction = async (patientData: any) => {
+  type PredictPayload = { model_type: 'full'|'quick'; patient_data: Record<string, number|string> };
+
+  const handlePrediction = async (patientData: PredictPayload) => {
     setLoading(true);
     setError(null);
 
@@ -45,11 +63,11 @@ export default function Home() {
       const data = await response.json();
 
       if (data.success) {
-        setPrediction(data.prediction);
+        setPrediction(data.result);
       } else {
         setError(data.error || "Prediction failed");
       }
-    } catch (err) {
+    } catch {
       setError(
         "Failed to connect to the backend. Please ensure the Flask server is running."
       );
@@ -75,8 +93,8 @@ export default function Home() {
             AI-Powered Cardiovascular Disease Risk Prediction
           </p>
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg mt-4 inline-block">
-            <span className="font-semibold">95.91% Accuracy</span> •
-            Clinical-Grade Model
+            <span className="font-semibold">Dual Model System</span> •
+            Full Accuracy (95.91%) & Quick Assessment (86.79%)
           </div>
         </div>
 
@@ -95,7 +113,7 @@ export default function Home() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <CVDAssessmentForm
+              <CVDAssessmentFormDual
                 onSubmit={handlePrediction}
                 loading={loading}
                 error={error}
