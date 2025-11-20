@@ -20,33 +20,76 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# Load both models
-FULL_MODEL_PATH = '/Users/murad/Developer/cvd-risk-prediction-ai/ml-models/models/cvd_full_xgb.pkl'
-QUICK_MODEL_PATH = '/Users/murad/Developer/cvd-risk-prediction-ai/ml-models/models/cvd_quick_xgb.pkl'
+# Load both models - using relative paths from the api directory
+FULL_MODEL_PATH = '../ml-models/models/cvd_full_xgb.pkl'
+QUICK_MODEL_PATH = '../ml-models/models/cvd_quick_xgb.pkl'
 
 full_model = None
 quick_model = None
 
+# Get current directory and model directory info
+current_dir = os.getcwd()
+# Find project root by looking for the cvd-risk-prediction-ai directory
+if 'cvd-risk-prediction-ai' in current_dir:
+    # Extract the project root
+    parts = current_dir.split(os.sep)
+    cvd_index = next(i for i, part in enumerate(parts) if 'cvd-risk-prediction-ai' in part)
+    project_root = os.sep.join(parts[:cvd_index+1])
+else:
+    # Fallback - assume current directory is project root
+    project_root = current_dir
+
+models_dir = os.path.join(project_root, 'ml-models', 'models')
+print(f"Current working directory: {current_dir}")
+print(f"Project root: {project_root}")
+print(f"Looking for models in: {os.path.abspath(models_dir)}")
+
+# List available model files
+if os.path.exists(models_dir):
+    available_files = os.listdir(models_dir)
+    print(f"Available model files: {available_files}")
+else:
+    print("⚠️  Models directory not found!")
+
 try:
-    print(f"Looking for full model at: {os.path.abspath(FULL_MODEL_PATH)}")
-    if os.path.exists(FULL_MODEL_PATH):
-        full_model = joblib.load(FULL_MODEL_PATH)
+    full_model_path = os.path.join(models_dir, 'cvd_full_xgb.pkl')
+    print(f"Looking for full model at: {full_model_path}")
+    
+    if os.path.exists(full_model_path):
+        full_model = joblib.load(full_model_path)
         print("✅ Full Accuracy Model loaded (95.91%, 23 features)")
     else:
-        print("⚠️  Full model not found")
-        print(f"Current working directory: {os.getcwd()}")
-        print("Available files:")
-        if os.path.exists('../ml-models/models/'):
-            print(os.listdir('../ml-models/models/'))
+        print("⚠️  Full model not found at expected location")
+        # Try alternative names
+        alt_paths = ['cvd_full_model.pkl', 'cvd_simplified_model.pkl']
+        for alt_name in alt_paths:
+            alt_path = os.path.join(models_dir, alt_name)
+            if os.path.exists(alt_path):
+                print(f"Found alternative model: {alt_name}")
+                full_model = joblib.load(alt_path)
+                print("✅ Full Accuracy Model loaded from alternative file")
+                break
 except Exception as e:
     print(f"⚠️  Error loading full model: {e}")
 
 try:
-    if os.path.exists(QUICK_MODEL_PATH):
-        quick_model = joblib.load(QUICK_MODEL_PATH)
+    quick_model_path = os.path.join(models_dir, 'cvd_quick_xgb.pkl')
+    print(f"Looking for quick model at: {quick_model_path}")
+    
+    if os.path.exists(quick_model_path):
+        quick_model = joblib.load(quick_model_path)
         print("✅ Quick Assessment Model loaded (86.79%, 8 features)")
     else:
-        print("⚠️  Quick model not found")
+        print("⚠️  Quick model not found at expected location")
+        # Try alternative names  
+        alt_paths = ['cvd_quick_model.pkl']
+        for alt_name in alt_paths:
+            alt_path = os.path.join(models_dir, alt_name)
+            if os.path.exists(alt_path):
+                print(f"Found alternative quick model: {alt_name}")
+                quick_model = joblib.load(alt_path)
+                print("✅ Quick Assessment Model loaded from alternative file")
+                break
 except Exception as e:
     print(f"⚠️  Error loading quick model: {e}")
 

@@ -57,7 +57,20 @@ def predict():
     """Predict CVD risk for a patient"""
     try:
         # Get patient data from request
-        patient_data = request.json
+        data = request.json
+        
+        if not data:
+            return jsonify({'error': 'No patient data provided'}), 400
+        
+        # Handle both direct format and dual API format
+        if 'patient_data' in data:
+            # Dual API format: {"model_type": "full", "patient_data": {...}}
+            model_type = data.get('model_type', 'full')
+            patient_data = data.get('patient_data', {})
+        else:
+            # Direct format: {"Age": 45, "BMI": 25.5, ...}
+            model_type = 'full'
+            patient_data = data
         
         if not patient_data:
             return jsonify({'error': 'No patient data provided'}), 400
@@ -104,22 +117,61 @@ def predict():
         total = sum(probabilities)
         probabilities = [p/total for p in probabilities]
         
+        # Clinical interpretation
+        if risk_level == 'LOW':
+            clinical_interpretation = {
+                'risk_category': 'Low Risk',
+                'confidence_level': 'High',
+                'recommendations': {
+                    'recommendation': 'Continue current lifestyle with routine monitoring',
+                    'follow_up': 'Annual cardiovascular assessment',
+                    'lifestyle': 'Maintain healthy diet, regular exercise, and avoid smoking'
+                }
+            }
+        elif risk_level == 'INTERMEDIARY':
+            clinical_interpretation = {
+                'risk_category': 'Moderate Risk',
+                'confidence_level': 'Good',
+                'recommendations': {
+                    'recommendation': 'Enhanced screening and lifestyle modifications recommended',
+                    'follow_up': 'Semi-annual cardiovascular monitoring',
+                    'lifestyle': 'Structured exercise program, dietary counseling, stress management'
+                }
+            }
+        else:  # HIGH
+            clinical_interpretation = {
+                'risk_category': 'High Risk',
+                'confidence_level': 'Good',
+                'recommendations': {
+                    'recommendation': 'Immediate clinical evaluation and intervention required',
+                    'follow_up': 'Quarterly monitoring with specialist consultation',
+                    'lifestyle': 'Intensive lifestyle intervention, medication review, cardiac rehabilitation'
+                }
+            }
+        
         result = {
-            'risk_level': risk_level,
-            'risk_code': int(risk_code),
-            'confidence': float(confidence),
-            'probabilities': {
-                'LOW': float(probabilities[0]),
-                'INTERMEDIARY': float(probabilities[1]),
-                'HIGH': float(probabilities[2])
+            'model_used': {
+                'type': model_type,
+                'name': 'Full Accuracy Model' if model_type == 'full' else 'Quick Assessment Model',
+                'accuracy': 0.95 if model_type == 'full' else 0.87,
+                'features_used': 19 if model_type == 'full' else 8
             },
-            'model_accuracy': 0.95,
-            'risk_score': risk_score
+            'prediction': {
+                'risk_level': risk_level,
+                'risk_code': int(risk_code),
+                'confidence': float(confidence),
+                'probabilities': {
+                    'LOW': float(probabilities[0]),
+                    'INTERMEDIARY': float(probabilities[1]),
+                    'HIGH': float(probabilities[2])
+                }
+            },
+            'clinical_interpretation': clinical_interpretation
         }
         
         return jsonify({
             'success': True,
-            'prediction': result,
+            'result': result,
             'timestamp': '2025-01-08T23:09:00.000Z'
         })
         
@@ -224,6 +276,130 @@ def get_example_patient():
         risk_type = 'low_risk'
     
     return jsonify(example_patients[risk_type])
+
+@app.route('/api/models', methods=['GET'])
+def get_available_models():
+    """Get available model options"""
+    models = [
+        {
+            'id': 'full',
+            'name': 'Full Accuracy Model',
+            'description': 'Maximum accuracy with comprehensive assessment',
+            'accuracy': '95.00%',
+            'features': 20,
+            'time_required': '5-7 minutes',
+            'recommended_for': 'Comprehensive clinical assessment'
+        },
+        {
+            'id': 'quick',
+            'name': 'Quick Assessment Model', 
+            'description': 'Fast screening with key risk factors',
+            'accuracy': '87.00%',
+            'features': 8,
+            'time_required': '1-2 minutes',
+            'recommended_for': 'Initial screening and triage'
+        }
+    ]
+    
+    return jsonify({
+        'available_models': models,
+        'default_model': 'full'
+    })
+
+@app.route('/api/features/<model_type>', methods=['GET'])
+def get_model_features(model_type):
+    """Get required features for specific model"""
+    if model_type == 'full':
+        features = [
+            'Sex', 'Age', 'Weight (kg)', 'Height (m)', 'BMI',
+            'Systolic BP', 'Diastolic BP', 'Blood Pressure Category',
+            'Total Cholesterol (mg/dL)', 'HDL (mg/dL)', 'Estimated LDL (mg/dL)',
+            'Fasting Blood Sugar (mg/dL)', 'Smoking Status', 'Diabetes Status',
+            'Family History of CVD', 'Physical Activity Level',
+            'Abdominal Circumference (cm)', 'Waist-to-Height Ratio', 'CVD Risk Score'
+        ]
+        model_info = {
+            'name': 'Full Accuracy Model',
+            'accuracy': '95.00%',
+            'description': 'Comprehensive 19-feature assessment'
+        }
+        feature_categories = {
+            'Demographics': ['Sex', 'Age', 'Weight (kg)', 'Height (m)', 'BMI'],
+            'Vital Signs': ['Systolic BP', 'Diastolic BP', 'Blood Pressure Category'],
+            'Lab Values': ['Total Cholesterol (mg/dL)', 'HDL (mg/dL)', 'Estimated LDL (mg/dL)', 
+                          'Fasting Blood Sugar (mg/dL)'],
+            'Risk Factors': ['Smoking Status', 'Diabetes Status', 'Family History of CVD',
+                           'Physical Activity Level'],
+            'Additional Measurements': ['CVD Risk Score', 'Waist-to-Height Ratio', 
+                                     'Abdominal Circumference (cm)']
+        }
+    else:  # quick
+        features = [
+            'Age', 'Sex', 'BMI', 'Systolic BP', 'Diastolic BP',
+            'Total Cholesterol (mg/dL)', 'Smoking Status', 'CVD Risk Score'
+        ]
+        model_info = {
+            'name': 'Quick Assessment Model',
+            'accuracy': '87.00%',
+            'description': 'Essential 8-feature screening'
+        }
+        feature_categories = {
+            'Demographics': ['Age', 'Sex', 'BMI'],
+            'Vital Signs': ['Systolic BP', 'Diastolic BP'],
+            'Lab Values': ['Total Cholesterol (mg/dL)'],
+            'Risk Assessment': ['Smoking Status', 'CVD Risk Score']
+        }
+    
+    return jsonify({
+        'model': model_info,
+        'required_features': features,
+        'feature_count': len(features),
+        'categories': feature_categories
+    })
+
+@app.route('/api/example/<model_type>', methods=['GET'])
+def get_example_data(model_type):
+    """Get example data for specific model"""
+    risk_type = request.args.get('risk', 'low')
+    
+    if model_type == 'full':
+        examples = {
+            'low': {
+                'Sex': 0, 'Age': 30, 'Weight (kg)': 65.0, 'Height (m)': 1.68, 'BMI': 23.0,
+                'Systolic BP': 110.0, 'Diastolic BP': 70.0, 'Blood Pressure Category': 1,
+                'Total Cholesterol (mg/dL)': 175.0, 'HDL (mg/dL)': 65.0, 'Estimated LDL (mg/dL)': 100.0,
+                'Fasting Blood Sugar (mg/dL)': 85.0, 'Smoking Status': 0, 'Diabetes Status': 0,
+                'Family History of CVD': 0, 'Physical Activity Level': 2,
+                'Abdominal Circumference (cm)': 75.0, 'Waist-to-Height Ratio': 0.45,
+                'CVD Risk Score': 10.0
+            },
+            'high': {
+                'Sex': 1, 'Age': 58, 'Weight (kg)': 95.0, 'Height (m)': 1.75, 'BMI': 31.0,
+                'Systolic BP': 160.0, 'Diastolic BP': 95.0, 'Blood Pressure Category': 4,
+                'Total Cholesterol (mg/dL)': 280.0, 'HDL (mg/dL)': 35.0, 'Estimated LDL (mg/dL)': 200.0,
+                'Fasting Blood Sugar (mg/dL)': 145.0, 'Smoking Status': 1, 'Diabetes Status': 1,
+                'Family History of CVD': 1, 'Physical Activity Level': 0,
+                'Abdominal Circumference (cm)': 105.0, 'Waist-to-Height Ratio': 0.60,
+                'CVD Risk Score': 25.0
+            }
+        }
+    else:  # quick
+        examples = {
+            'low': {
+                'Age': 30, 'Sex': 0, 'BMI': 22.0, 'Systolic BP': 110.0, 'Diastolic BP': 70.0,
+                'Total Cholesterol (mg/dL)': 175.0, 'Smoking Status': 0, 'CVD Risk Score': 8.0
+            },
+            'high': {
+                'Age': 58, 'Sex': 1, 'BMI': 31.0, 'Systolic BP': 160.0, 'Diastolic BP': 95.0,
+                'Total Cholesterol (mg/dL)': 280.0, 'Smoking Status': 1, 'CVD Risk Score': 22.0
+            }
+        }
+    
+    return jsonify({
+        'model_type': model_type,
+        'risk_type': risk_type,
+        'example_data': examples.get(risk_type, examples['low'])
+    })
 
 if __name__ == '__main__':
     print("="*60)

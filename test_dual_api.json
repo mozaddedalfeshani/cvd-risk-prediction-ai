@@ -1,0 +1,20 @@
+{
+  "model_type": "full",
+  "patient_data": {
+    "Age": 45,
+    "BMI": 25.5,
+    "Systolic BP": 130,
+    "Diastolic BP": 80,
+    "Total Cholesterol (mg/dL)": 200,
+    "HDL (mg/dL)": 50,
+    "Smoking Status": 0,
+    "Diabetes Status": 0,
+    "CVD Risk Score": 15.0,
+    "Sex": 1,
+    "Weight (kg)": 75.0,
+    "Height (m)": 1.75,
+    "Family History of CVD": 0,
+    "Physical Activity Level": 1,
+    "Fasting Blood Sugar (mg/dL)": 95.0
+  }
+}
