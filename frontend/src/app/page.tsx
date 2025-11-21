@@ -11,6 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import CVDAssessmentFormDual from "@/components/CVDAssessmentFormDual";
 import PredictionResult from "@/components/PredictionResult";
+import { motion } from "framer-motion";
+import { Activity, ShieldCheck } from "lucide-react";
 
 interface PredictionResult {
   model_used: {
@@ -82,62 +84,99 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            CVD Risk Assessment
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-4 md:p-8 font-sans">
+      <div className="max-w-5xl mx-auto">
+        {/* Fun Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 100 }}
+          className="text-center mb-12"
+        >
+          <motion.div
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+            className="text-6xl mb-4 inline-block cursor-default"
+          >
+            ❤️
+          </motion.div>
+          <h1 className="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-4 tracking-tight drop-shadow-sm">
+            Check Your Heart Health
           </h1>
-          <p className="text-lg text-gray-600">
-            AI-Powered Cardiovascular Disease Risk Prediction
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto font-medium">
+            A super smart AI that helps you understand your heart risks! 🤖✨
           </p>
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg mt-4 inline-block">
-            <span className="font-semibold">Dual Model System</span> •
-            Full Accuracy (95.91%) & Quick Assessment (86.79%)
-          </div>
-        </div>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5 }}
+            className="inline-flex items-center gap-2 bg-white border-2 border-purple-200 text-purple-700 px-6 py-2 rounded-full mt-6 shadow-lg"
+          >
+            <span className="text-2xl">🛡️</span>
+            <span className="font-bold">Dual AI Power</span>
+            <span className="w-2 h-2 bg-purple-400 rounded-full mx-2" />
+            <span className="font-bold">95.9% Accurate!</span>
+          </motion.div>
+        </motion.div>
 
         {/* Main Content */}
-        {!prediction ? (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="bg-blue-100 p-2 rounded-lg">🏥</span>
-                Patient Assessment Form
-              </CardTitle>
-              <CardDescription>
-                Please fill in the patient information below to assess
-                cardiovascular disease risk. All fields are required for
-                accurate prediction.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CVDAssessmentFormDual
-                onSubmit={handlePrediction}
-                loading={loading}
-                error={error}
-              />
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-6">
-            <PredictionResult prediction={prediction} />
-            <div className="text-center">
-              <Button onClick={resetForm} variant="outline" size="lg">
-                Assess Another Patient
-              </Button>
-            </div>
-          </div>
-        )}
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, type: "spring" }}
+        >
+          {!prediction ? (
+            <Card className="border-none shadow-2xl bg-white/60 backdrop-blur-xl rounded-[2.5rem] overflow-hidden ring-4 ring-white/50">
+              <CardHeader className="border-b border-gray-100 bg-white/50 p-8 text-center">
+                <CardTitle className="flex items-center justify-center gap-3 text-3xl font-bold text-gray-800">
+                  <span className="text-4xl">📋</span>
+                  Start Your Assessment
+                </CardTitle>
+                <CardDescription className="text-lg mt-2 font-medium text-gray-500">
+                  Fill out the simple form below to get your instant heart health report!
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6 md:p-10">
+                <CVDAssessmentFormDual
+                  onSubmit={handlePrediction}
+                  loading={loading}
+                  error={error}
+                />
+              </CardContent>
+            </Card>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="space-y-8"
+            >
+              <PredictionResult prediction={prediction} />
+              <div className="text-center">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={resetForm}
+                  className="px-10 py-4 text-xl font-bold text-white bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-xl hover:shadow-2xl transition-all"
+                >
+                  🔄 Check Another Patient
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
 
         {/* Footer */}
-        <div className="mt-12 text-center text-gray-500 text-sm">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="mt-20 text-center text-gray-400 text-sm font-medium"
+        >
           <p>
-            This tool is for clinical decision support only. Always consult with
-            healthcare professionals for medical decisions.
+            Made with 💖 for a healthier world. (Remember: This is an AI tool, always see a doctor! 👨‍⚕️)
           </p>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

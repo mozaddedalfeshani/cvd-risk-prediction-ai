@@ -18,6 +18,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface CVDAssessmentFormProps {
   onSubmit: (data: { model_type?: 'full'; patient_data: Record<string, number|string> }) => void;
@@ -62,13 +64,14 @@ export default function CVDAssessmentForm({
   });
 
   const [currentStep, setCurrentStep] = useState<number>(0);
+  const [direction, setDirection] = useState(0);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
 
     // Auto-calculate derived fields
     if (field === "Weight (kg)" || field === "Height (m)") {
-      calculateBMI();
+      calculateBMI(field === "Weight (kg)" ? value : formData["Weight (kg)"], field === "Height (m)" ? value : formData["Height (m)"]);
     }
     if (field === "Systolic BP" || field === "Diastolic BP") {
       calculatePulsePressure();
@@ -78,9 +81,9 @@ export default function CVDAssessmentForm({
     }
   };
 
-  const calculateBMI = () => {
-    const weight = parseFloat(formData["Weight (kg)"]);
-    const height = parseFloat(formData["Height (m)"]);
+  const calculateBMI = (weightStr: string, heightStr: string) => {
+    const weight = parseFloat(weightStr);
+    const height = parseFloat(heightStr);
     if (weight && height) {
       const bmi = weight / (height * height);
       setFormData((prev) => ({ ...prev, BMI: bmi.toFixed(1) }));
@@ -208,33 +211,45 @@ export default function CVDAssessmentForm({
     () => [
       {
         key: "demographics",
-        title: "Demographics",
-        description: "Basic patient information",
+        title: "About You",
+        description: "Let's get to know you! 👋",
+        emoji: "👤",
+        color: "bg-blue-100 text-blue-600",
       },
       {
         key: "vitals",
-        title: "Vital Signs",
-        description: "Blood pressure and cardiovascular measurements",
+        title: "Heart Stats",
+        description: "How's your heart beating? 💓",
+        emoji: "💓",
+        color: "bg-red-100 text-red-600",
       },
       {
         key: "labs",
-        title: "Laboratory Values",
-        description: "Cholesterol and blood sugar measurements",
+        title: "Lab Check",
+        description: "Sugar and stuff! 🧪",
+        emoji: "🧪",
+        color: "bg-purple-100 text-purple-600",
       },
       {
         key: "risk",
-        title: "Risk Factors",
-        description: "Lifestyle and genetic risk factors",
+        title: "Lifestyle",
+        description: "Your daily habits! 🏃",
+        emoji: "🏃",
+        color: "bg-green-100 text-green-600",
       },
       {
         key: "additional",
-        title: "Additional Measurements",
-        description: "Additional clinical measurements",
+        title: "Extra Info",
+        description: "Just a few more things! 📏",
+        emoji: "📏",
+        color: "bg-orange-100 text-orange-600",
       },
       {
         key: "review",
-        title: "Review & Submit",
-        description: "Confirm details and assess risk",
+        title: "Ready?",
+        description: "Let's check everything! ✅",
+        emoji: "✅",
+        color: "bg-teal-100 text-teal-600",
       },
     ],
     []
@@ -280,18 +295,22 @@ export default function CVDAssessmentForm({
         return true;
       default:
         return true;
-    }
+      }
   };
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       if (!isStepValid(currentStep)) return;
+      setDirection(1);
       setCurrentStep((s) => s + 1);
     }
   };
 
   const handleBack = () => {
-    if (currentStep > 0) setCurrentStep((s) => s - 1);
+    if (currentStep > 0) {
+      setDirection(-1);
+      setCurrentStep((s) => s - 1);
+    }
   };
 
   const loadExampleData = async (type: "low_risk" | "high_risk") => {
@@ -314,438 +333,508 @@ export default function CVDAssessmentForm({
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      {/* Error Display */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-          <div className="font-semibold">Error:</div>
-          <div>{error}</div>
-        </div>
-      )}
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 100 : -100,
+      opacity: 0,
+      scale: 0.8,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      scale: 1,
+    },
+    exit: (direction: number) => ({
+      x: direction < 0 ? 100 : -100,
+      opacity: 0,
+      scale: 0.8,
+    })
+  };
 
-      {/* Stepper Header */}
-      <Card className="border-2">
-        <CardHeader>
-          <CardTitle className="text-xl flex items-center gap-3">
-            <span className="text-2xl">🧭</span>
-            <span>
-              Step {currentStep + 1} of {steps.length}: {steps[currentStep].title}
-            </span>
-          </CardTitle>
-          <CardDescription>{steps[currentStep].description}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="w-full bg-gray-200 rounded-full h-3">
+  return (
+    <div className="space-y-8">
+      {/* Error Display */}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.9 }}
+            className="bg-red-100 border-2 border-red-200 text-red-700 px-6 py-4 rounded-2xl shadow-sm flex items-center gap-3"
+          >
+            <span className="text-2xl">🚫</span>
+            <div>
+              <div className="font-bold">Oops! Something went wrong:</div>
+              <div>{error}</div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Fun Stepper Header */}
+      <div className="relative px-4">
+        <div className="flex justify-between mb-8">
+          {steps.map((step, index) => (
             <div
-              className="h-3 rounded-full bg-blue-600 transition-all duration-500"
-              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-            />
-          </div>
-          <div className="flex flex-wrap gap-2 mt-3 text-sm text-gray-600">
-            {steps.map((s, i) => (
-              <div
-                key={s.key}
-                className={`px-3 py-1 rounded-full border ${
-                  i === currentStep
-                    ? "bg-blue-50 border-blue-300 text-blue-700"
-                    : i < currentStep
-                    ? "bg-green-50 border-green-300 text-green-700"
-                    : "bg-gray-50 border-gray-300"
+              key={step.key}
+              className="flex flex-col items-center relative z-10"
+            >
+              <motion.div
+                initial={false}
+                animate={{
+                  scale: index === currentStep ? 1.3 : 1,
+                  y: index === currentStep ? -5 : 0,
+                }}
+                className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center text-2xl md:text-3xl shadow-md transition-all duration-300 cursor-default border-4 ${
+                  index <= currentStep
+                    ? "border-white bg-gradient-to-br from-yellow-200 to-orange-300"
+                    : "border-gray-100 bg-gray-100 grayscale opacity-50"
                 }`}
               >
-                {i + 1}. {s.title}
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+                {step.emoji}
+              </motion.div>
+              {index === currentStep && (
+                <motion.div
+                  layoutId="step-label"
+                  className="absolute top-16 w-32 text-center"
+                >
+                  <span className="text-sm font-bold text-gray-800 bg-white px-3 py-1 rounded-full shadow-sm border border-gray-100">
+                    {step.title}
+                  </span>
+                </motion.div>
+              )}
+            </div>
+          ))}
+        </div>
+        {/* Progress Bar Background */}
+        <div className="absolute top-6 md:top-7 left-0 w-full h-3 bg-gray-100 rounded-full -z-0" />
+        {/* Active Progress Bar */}
+        <motion.div
+          className="absolute top-6 md:top-7 left-0 h-3 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full -z-0"
+          initial={{ width: "0%" }}
+          animate={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
+          transition={{ type: "spring", stiffness: 100, damping: 20 }}
+        />
+      </div>
 
-      {/* Example Data Buttons (always accessible) */}
-      <div className="flex flex-wrap gap-4 mb-2">
-        <Button
+      {/* Example Data Buttons */}
+      <div className="flex flex-wrap gap-3 justify-center md:justify-end">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           type="button"
-          variant="outline"
           onClick={() => loadExampleData("low_risk")}
-          className="bg-green-50 border-green-200 hover:bg-green-100"
-          size="lg"
+          className="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold hover:bg-green-200 transition-colors border border-green-200"
         >
-          Load Low Risk Example
-        </Button>
-        <Button
+          🌱 Try Healthy Example
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           type="button"
-          variant="outline"
           onClick={() => loadExampleData("high_risk")}
-          className="bg-red-50 border-red-200 hover:bg-red-100"
-          size="lg"
+          className="bg-red-100 text-red-700 px-4 py-2 rounded-full text-sm font-semibold hover:bg-red-200 transition-colors border border-red-200"
         >
-          Load High Risk Example
-        </Button>
+          🍔 Try Risk Example
+        </motion.button>
       </div>
 
       {/* Step Content */}
-      {steps[currentStep].key === "demographics" && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Demographics</CardTitle>
-            <CardDescription>Basic patient information</CardDescription>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="sex">Sex</Label>
-              <Select onValueChange={(value) => handleInputChange("Sex", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select sex" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">Female</SelectItem>
-                  <SelectItem value="1">Male</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="age">Age (years)</Label>
-              <Input
-                id="age"
-                type="number"
-                value={formData["Age"]}
-                onChange={(e) => handleInputChange("Age", e.target.value)}
-                placeholder="e.g., 45"
-              />
-            </div>
-            <div>
-              <Label htmlFor="weight">Weight (kg)</Label>
-              <Input
-                id="weight"
-                type="number"
-                step="0.1"
-                value={formData["Weight (kg)"]}
-                onChange={(e) => handleInputChange("Weight (kg)", e.target.value)}
-                placeholder="e.g., 70.5"
-              />
-            </div>
-            <div>
-              <Label htmlFor="height">Height (m)</Label>
-              <Input
-                id="height"
-                type="number"
-                step="0.01"
-                value={formData["Height (m)"]}
-                onChange={(e) => handleInputChange("Height (m)", e.target.value)}
-                placeholder="e.g., 1.75"
-              />
-            </div>
-            <div>
-              <Label htmlFor="bmi">BMI (auto-calculated)</Label>
-              <Input
-                id="bmi"
-                type="number"
-                step="0.1"
-                value={formData["BMI"]}
-                onChange={(e) => handleInputChange("BMI", e.target.value)}
-                placeholder="Calculated automatically"
-                readOnly
-              />
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {steps[currentStep].key === "vitals" && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Vital Signs</CardTitle>
-            <CardDescription>
-              Blood pressure and cardiovascular measurements
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="systolic">Systolic BP (mmHg)</Label>
-              <Input
-                id="systolic"
-                type="number"
-                value={formData["Systolic BP"]}
-                onChange={(e) => handleInputChange("Systolic BP", e.target.value)}
-                placeholder="e.g., 120"
-              />
-            </div>
-            <div>
-              <Label htmlFor="diastolic">Diastolic BP (mmHg)</Label>
-              <Input
-                id="diastolic"
-                type="number"
-                value={formData["Diastolic BP"]}
-                onChange={(e) =>
-                  handleInputChange("Diastolic BP", e.target.value)
-                }
-                placeholder="e.g., 80"
-              />
-            </div>
-            <div>
-              <Label htmlFor="bp-category">Blood Pressure Category</Label>
-              <Select
-                onValueChange={(value) =>
-                  handleInputChange("Blood Pressure Category", value)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">Normal</SelectItem>
-                  <SelectItem value="2">Elevated</SelectItem>
-                  <SelectItem value="3">Hypertension Stage 1</SelectItem>
-                  <SelectItem value="4">Hypertension Stage 2</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {steps[currentStep].key === "labs" && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Laboratory Values</CardTitle>
-            <CardDescription>
-              Cholesterol and blood sugar measurements
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="total-chol">Total Cholesterol (mg/dL)</Label>
-              <Input
-                id="total-chol"
-                type="number"
-                value={formData["Total Cholesterol (mg/dL)"]}
-                onChange={(e) =>
-                  handleInputChange("Total Cholesterol (mg/dL)", e.target.value)
-                }
-                placeholder="e.g., 200"
-              />
-            </div>
-            <div>
-              <Label htmlFor="hdl">HDL Cholesterol (mg/dL)</Label>
-              <Input
-                id="hdl"
-                type="number"
-                value={formData["HDL (mg/dL)"]}
-                onChange={(e) => handleInputChange("HDL (mg/dL)", e.target.value)}
-                placeholder="e.g., 50"
-              />
-            </div>
-            <div>
-              <Label htmlFor="ldl">LDL Cholesterol (mg/dL)</Label>
-              <Input
-                id="ldl"
-                type="number"
-                value={formData["Estimated LDL (mg/dL)"]}
-                onChange={(e) =>
-                  handleInputChange("Estimated LDL (mg/dL)", e.target.value)
-                }
-                placeholder="e.g., 130"
-              />
-            </div>
-            <div>
-              <Label htmlFor="glucose">Fasting Blood Sugar (mg/dL)</Label>
-              <Input
-                id="glucose"
-                type="number"
-                value={formData["Fasting Blood Sugar (mg/dL)"]}
-                onChange={(e) =>
-                  handleInputChange("Fasting Blood Sugar (mg/dL)", e.target.value)
-                }
-                placeholder="e.g., 100"
-              />
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {steps[currentStep].key === "risk" && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Risk Factors</CardTitle>
-            <CardDescription>Lifestyle and genetic risk factors</CardDescription>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="smoking">Smoking Status</Label>
-              <Select
-                onValueChange={(value) =>
-                  handleInputChange("Smoking Status", value)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">Non-smoker</SelectItem>
-                  <SelectItem value="1">Smoker</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="diabetes">Diabetes Status</Label>
-              <Select
-                onValueChange={(value) =>
-                  handleInputChange("Diabetes Status", value)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">No Diabetes</SelectItem>
-                  <SelectItem value="1">Has Diabetes</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="family-history">Family History of CVD</Label>
-              <Select
-                onValueChange={(value) =>
-                  handleInputChange("Family History of CVD", value)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select history" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">No Family History</SelectItem>
-                  <SelectItem value="1">Has Family History</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="activity">Physical Activity Level</Label>
-              <Select
-                onValueChange={(value) =>
-                  handleInputChange("Physical Activity Level", value)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">Low</SelectItem>
-                  <SelectItem value="1">Moderate</SelectItem>
-                  <SelectItem value="2">High</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {steps[currentStep].key === "additional" && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Additional Measurements</CardTitle>
-            <CardDescription>Additional clinical measurements</CardDescription>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="waist">Abdominal Circumference (cm)</Label>
-              <Input
-                id="waist"
-                type="number"
-                step="0.1"
-                value={formData["Abdominal Circumference (cm)"]}
-                onChange={(e) =>
-                  handleInputChange(
-                    "Abdominal Circumference (cm)",
-                    e.target.value
-                  )
-                }
-                placeholder="e.g., 90"
-              />
-            </div>
-            <div>
-              <Label htmlFor="waist-height-ratio">Waist-to-Height Ratio</Label>
-              <Input
-                id="waist-height-ratio"
-                type="number"
-                step="0.01"
-                value={formData["Waist-to-Height Ratio"]}
-                onChange={(e) =>
-                  handleInputChange("Waist-to-Height Ratio", e.target.value)
-                }
-                placeholder="e.g., 0.5"
-              />
-            </div>
-            <div>
-              <Label htmlFor="cvd-score">CVD Risk Score</Label>
-              <Input
-                id="cvd-score"
-                type="number"
-                step="0.1"
-                value={formData["CVD Risk Score"]}
-                onChange={(e) =>
-                  handleInputChange("CVD Risk Score", e.target.value)
-                }
-                placeholder="e.g., 15.5"
-              />
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {steps[currentStep].key === "review" && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Review & Submit</CardTitle>
-            <CardDescription>
-              Please review the entered details before assessing risk.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(formData).map(([key, value]) => (
-                <div key={key} className="p-3 bg-gray-50 rounded-md">
-                  <div className="text-xs text-gray-500">{key}</div>
-                  <div className="text-base font-medium">{String(value || "-")}</div>
+      <Card className="overflow-hidden border-none shadow-2xl bg-white/90 backdrop-blur-md rounded-3xl">
+        <CardHeader className={`${steps[currentStep].color} bg-opacity-20 border-b border-gray-100 p-6`}>
+          <CardTitle className="text-2xl md:text-3xl flex items-center gap-3">
+            <motion.span
+              key={currentStep}
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+            >
+              {steps[currentStep].emoji}
+            </motion.span>
+            {steps[currentStep].title}
+          </CardTitle>
+          <CardDescription className="text-lg opacity-90 font-medium">
+            {steps[currentStep].description}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-6 md:p-8 min-h-[400px]">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={currentStep}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+                scale: { duration: 0.2 },
+              }}
+              className="h-full"
+            >
+              {steps[currentStep].key === "demographics" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="sex" className="text-lg">Sex ⚧️</Label>
+                    <Select onValueChange={(value) => handleInputChange("Sex", value)} value={formData["Sex"]}>
+                      <SelectTrigger className="h-12 text-lg rounded-xl border-2 focus:border-blue-400">
+                        <SelectValue placeholder="Select sex" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">👩 Female</SelectItem>
+                        <SelectItem value="1">👨 Male</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="age" className="text-lg">Age 🎂</Label>
+                    <Input
+                      id="age"
+                      type="number"
+                      value={formData["Age"]}
+                      onChange={(e) => handleInputChange("Age", e.target.value)}
+                      placeholder="e.g., 45"
+                      className="h-12 text-lg rounded-xl border-2 focus:border-blue-400"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="weight" className="text-lg">Weight (kg) ⚖️</Label>
+                    <Input
+                      id="weight"
+                      type="number"
+                      step="0.1"
+                      value={formData["Weight (kg)"]}
+                      onChange={(e) => handleInputChange("Weight (kg)", e.target.value)}
+                      placeholder="e.g., 70.5"
+                      className="h-12 text-lg rounded-xl border-2 focus:border-blue-400"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="height" className="text-lg">Height (m) 📏</Label>
+                    <Input
+                      id="height"
+                      type="number"
+                      step="0.01"
+                      value={formData["Height (m)"]}
+                      onChange={(e) => handleInputChange("Height (m)", e.target.value)}
+                      placeholder="e.g., 1.75"
+                      className="h-12 text-lg rounded-xl border-2 focus:border-blue-400"
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="bmi" className="text-lg">BMI (Auto) 🤖</Label>
+                    <Input
+                      id="bmi"
+                      type="number"
+                      value={formData["BMI"]}
+                      readOnly
+                      className="h-12 text-lg rounded-xl border-2 bg-gray-50 font-bold text-blue-600"
+                    />
+                  </div>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              )}
+
+              {steps[currentStep].key === "vitals" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="systolic" className="text-lg">Systolic BP ⬆️</Label>
+                    <Input
+                      id="systolic"
+                      type="number"
+                      value={formData["Systolic BP"]}
+                      onChange={(e) => handleInputChange("Systolic BP", e.target.value)}
+                      placeholder="e.g., 120"
+                      className="h-12 text-lg rounded-xl border-2 focus:border-red-400"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="diastolic" className="text-lg">Diastolic BP ⬇️</Label>
+                    <Input
+                      id="diastolic"
+                      type="number"
+                      value={formData["Diastolic BP"]}
+                      onChange={(e) => handleInputChange("Diastolic BP", e.target.value)}
+                      placeholder="e.g., 80"
+                      className="h-12 text-lg rounded-xl border-2 focus:border-red-400"
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="bp-category" className="text-lg">BP Category 📊</Label>
+                    <Select
+                      onValueChange={(value) =>
+                        handleInputChange("Blood Pressure Category", value)
+                      }
+                      value={formData["Blood Pressure Category"]}
+                    >
+                      <SelectTrigger className="h-12 text-lg rounded-xl border-2 focus:border-red-400">
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">💚 Normal</SelectItem>
+                        <SelectItem value="2">💛 Elevated</SelectItem>
+                        <SelectItem value="3">🧡 Hypertension Stage 1</SelectItem>
+                        <SelectItem value="4">❤️ Hypertension Stage 2</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+
+              {steps[currentStep].key === "labs" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="total-chol" className="text-lg">Total Cholesterol 🩸</Label>
+                    <Input
+                      id="total-chol"
+                      type="number"
+                      value={formData["Total Cholesterol (mg/dL)"]}
+                      onChange={(e) =>
+                        handleInputChange("Total Cholesterol (mg/dL)", e.target.value)
+                      }
+                      placeholder="e.g., 200"
+                      className="h-12 text-lg rounded-xl border-2 focus:border-purple-400"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="hdl" className="text-lg">HDL (Good) 😇</Label>
+                    <Input
+                      id="hdl"
+                      type="number"
+                      value={formData["HDL (mg/dL)"]}
+                      onChange={(e) => handleInputChange("HDL (mg/dL)", e.target.value)}
+                      placeholder="e.g., 50"
+                      className="h-12 text-lg rounded-xl border-2 focus:border-purple-400"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="ldl" className="text-lg">LDL (Bad) 😈</Label>
+                    <Input
+                      id="ldl"
+                      type="number"
+                      value={formData["Estimated LDL (mg/dL)"]}
+                      onChange={(e) =>
+                        handleInputChange("Estimated LDL (mg/dL)", e.target.value)
+                      }
+                      placeholder="e.g., 130"
+                      className="h-12 text-lg rounded-xl border-2 focus:border-purple-400"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="glucose" className="text-lg">Blood Sugar 🍬</Label>
+                    <Input
+                      id="glucose"
+                      type="number"
+                      value={formData["Fasting Blood Sugar (mg/dL)"]}
+                      onChange={(e) =>
+                        handleInputChange("Fasting Blood Sugar (mg/dL)", e.target.value)
+                      }
+                      placeholder="e.g., 100"
+                      className="h-12 text-lg rounded-xl border-2 focus:border-purple-400"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {steps[currentStep].key === "risk" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="smoking" className="text-lg">Smoking? 🚬</Label>
+                    <Select
+                      onValueChange={(value) =>
+                        handleInputChange("Smoking Status", value)
+                      }
+                      value={formData["Smoking Status"]}
+                    >
+                      <SelectTrigger className="h-12 text-lg rounded-xl border-2 focus:border-green-400">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">🚭 Non-smoker</SelectItem>
+                        <SelectItem value="1">🚬 Smoker</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="diabetes" className="text-lg">Diabetes? 💉</Label>
+                    <Select
+                      onValueChange={(value) =>
+                        handleInputChange("Diabetes Status", value)
+                      }
+                      value={formData["Diabetes Status"]}
+                    >
+                      <SelectTrigger className="h-12 text-lg rounded-xl border-2 focus:border-green-400">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">❌ No Diabetes</SelectItem>
+                        <SelectItem value="1">✅ Has Diabetes</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="family-history" className="text-lg">Family History? 👪</Label>
+                    <Select
+                      onValueChange={(value) =>
+                        handleInputChange("Family History of CVD", value)
+                      }
+                      value={formData["Family History of CVD"]}
+                    >
+                      <SelectTrigger className="h-12 text-lg rounded-xl border-2 focus:border-green-400">
+                        <SelectValue placeholder="Select history" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">❌ No History</SelectItem>
+                        <SelectItem value="1">✅ Has History</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="activity" className="text-lg">Activity Level 🏃</Label>
+                    <Select
+                      onValueChange={(value) =>
+                        handleInputChange("Physical Activity Level", value)
+                      }
+                      value={formData["Physical Activity Level"]}
+                    >
+                      <SelectTrigger className="h-12 text-lg rounded-xl border-2 focus:border-green-400">
+                        <SelectValue placeholder="Select level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">🛋️ Low</SelectItem>
+                        <SelectItem value="1">🚶 Moderate</SelectItem>
+                        <SelectItem value="2">🏃 High</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+
+              {steps[currentStep].key === "additional" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="waist" className="text-lg">Waist Size (cm) 👖</Label>
+                    <Input
+                      id="waist"
+                      type="number"
+                      step="0.1"
+                      value={formData["Abdominal Circumference (cm)"]}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "Abdominal Circumference (cm)",
+                          e.target.value
+                        )
+                      }
+                      placeholder="e.g., 90"
+                      className="h-12 text-lg rounded-xl border-2 focus:border-orange-400"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="waist-height-ratio" className="text-lg">Waist-Height Ratio ➗</Label>
+                    <Input
+                      id="waist-height-ratio"
+                      type="number"
+                      step="0.01"
+                      value={formData["Waist-to-Height Ratio"]}
+                      onChange={(e) =>
+                        handleInputChange("Waist-to-Height Ratio", e.target.value)
+                      }
+                      placeholder="e.g., 0.5"
+                      className="h-12 text-lg rounded-xl border-2 focus:border-orange-400"
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="cvd-score" className="text-lg">CVD Score 💯</Label>
+                    <Input
+                      id="cvd-score"
+                      type="number"
+                      step="0.1"
+                      value={formData["CVD Risk Score"]}
+                      onChange={(e) =>
+                        handleInputChange("CVD Risk Score", e.target.value)
+                      }
+                      placeholder="e.g., 15.5"
+                      className="h-12 text-lg rounded-xl border-2 focus:border-orange-400"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {steps[currentStep].key === "review" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {Object.entries(formData).map(([key, value]) => (
+                    <motion.div
+                      key={key}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="p-4 bg-teal-50 rounded-2xl border border-teal-100"
+                    >
+                      <div className="text-xs text-teal-600 uppercase tracking-wider font-bold mb-1">{key}</div>
+                      <div className="text-lg font-bold text-gray-800">{String(value || "❓")}</div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </CardContent>
+      </Card>
 
       {/* Navigation Controls */}
-      <div className="flex items-center justify-between pt-2">
-        <Button
+      <div className="flex items-center justify-between pt-4 px-2">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           type="button"
-          variant="outline"
           onClick={handleBack}
           disabled={currentStep === 0}
-          size="lg"
+          className={`flex items-center px-6 py-3 rounded-full text-lg font-bold transition-colors ${
+            currentStep === 0
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-50"
+          }`}
         >
-          ← Previous
-        </Button>
+          <ChevronLeft className="w-6 h-6 mr-2" />
+          Back
+        </motion.button>
 
         {currentStep < steps.length - 1 ? (
-          <Button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             type="button"
             onClick={handleNext}
             disabled={!isStepValid(currentStep)}
-            size="lg"
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            className={`flex items-center px-8 py-3 rounded-full text-lg font-bold text-white shadow-lg transition-all ${
+              !isStepValid(currentStep)
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+            }`}
           >
-            Next →
-          </Button>
+            Next
+            <ChevronRight className="w-6 h-6 ml-2" />
+          </motion.button>
         ) : (
-          <Button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             type="submit"
+            onClick={handleSubmit}
             disabled={loading || !isStepValid(steps.length - 2)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
-            size="lg"
+            className="flex items-center px-10 py-4 rounded-full text-xl font-bold text-white shadow-xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
           >
-            {loading ? "Analyzing..." : "Assess CVD Risk"}
-          </Button>
+            {loading ? (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="w-6 h-6 border-4 border-white border-t-transparent rounded-full mr-2"
+              />
+            ) : (
+              "🚀 Assess Risk!"
+            )}
+          </motion.button>
         )}
       </div>
-    </form>
+    </div>
   );
 }
