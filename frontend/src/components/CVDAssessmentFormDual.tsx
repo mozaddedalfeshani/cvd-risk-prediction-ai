@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface CVDAssessmentFormDualProps {
   onSubmit: (data: { model_type: 'full'|'quick'; patient_data: Record<string, number|string> }) => void;
@@ -34,6 +35,7 @@ export default function CVDAssessmentFormDual({
   loading,
   error,
 }: CVDAssessmentFormDualProps) {
+  const { t } = useLanguage();
   const DERIVED_FIELDS = useState<string[]>([
     'Age_Group',
     'BMI_Category',
@@ -183,11 +185,38 @@ export default function CVDAssessmentFormDual({
     });
   };
 
+  const getTranslatedLabel = (field: string) => {
+    // Map backend field names to translation keys
+    const map: Record<string, string> = {
+      "Sex": "sex",
+      "Age": "age",
+      "Weight (kg)": "weight",
+      "Height (m)": "height",
+      "BMI": "bmi",
+      "Systolic BP": "systolic",
+      "Diastolic BP": "diastolic",
+      "Blood Pressure Category": "bp_category",
+      "Total Cholesterol (mg/dL)": "cholesterol",
+      "HDL (mg/dL)": "hdl",
+      "Estimated LDL (mg/dL)": "ldl",
+      "Fasting Blood Sugar (mg/dL)": "glucose",
+      "Smoking Status": "smoking",
+      "Diabetes Status": "diabetes",
+      "Family History of CVD": "family",
+      "Physical Activity Level": "activity",
+      "Abdominal Circumference (cm)": "waist",
+      "Waist-to-Height Ratio": "waist_ratio",
+      "CVD Risk Score": "cvd_score"
+    };
+    const key = map[field] as keyof typeof t.form.labels;
+    return key ? t.form.labels[key] || field : field;
+  };
+
   const renderInputField = (field: string) => {
     return (
       <div key={field} className="space-y-2">
         <Label htmlFor={field} className="text-sm font-medium">
-          {field}
+          {getTranslatedLabel(field)}
         </Label>
         <Input
           id={field}
@@ -195,7 +224,7 @@ export default function CVDAssessmentFormDual({
           step={field.includes('Height') || field.includes('Ratio') ? '0.01' : '1'}
           value={formData[field] || ''}
           onChange={(e) => handleInputChange(field, e.target.value)}
-          placeholder={`Enter ${field.toLowerCase()}`}
+          placeholder={`Enter ${getTranslatedLabel(field).toLowerCase()}`}
           className="w-full"
         />
       </div>
@@ -336,10 +365,10 @@ export default function CVDAssessmentFormDual({
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Analyzing...
+                    {t.form.buttons.loading}
                   </>
                 ) : (
-                  `Predict Risk (${selectedModelInfo?.accuracy || 'N/A'})`
+                  t.form.buttons.submit
                 )}
               </Button>
             </div>
