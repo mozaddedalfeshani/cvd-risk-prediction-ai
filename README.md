@@ -87,8 +87,8 @@ npm run dev
 ### 4. Access the Application
 
 - **Frontend**: http://localhost:3000
-- **API**: http://localhost:5001
-- **API Docs**: http://localhost:5001/docs
+- **API**: http://54.160.253.120:5001
+- **API Docs**: http://54.160.253.120:5001/docs
 
 ## 📊 Model Performance
 
@@ -158,7 +158,7 @@ docker-compose up --build
 
 # Access services
 # Frontend: http://localhost:3000
-# API: http://localhost:5001
+# API: http://54.160.253.120:5001
 ```
 
 ## 📈 Performance Metrics

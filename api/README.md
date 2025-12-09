@@ -72,7 +72,7 @@ docker run -p 5001:5001 cvd-api
 ### Health Check
 
 ```bash
-curl http://localhost:5001/api/health
+curl http://54.160.253.120:5001/api/health
 ```
 
 ```json
@@ -90,7 +90,7 @@ curl http://localhost:5001/api/health
 ### Risk Prediction
 
 ```bash
-curl -X POST "http://localhost:5001/api/predict" \
+curl -X POST "http://54.160.253.120:5001/api/predict" \
      -H "Content-Type: application/json" \
      -d '{
        "Age": 45,
@@ -124,7 +124,7 @@ curl -X POST "http://localhost:5001/api/predict" \
 ### Example Data
 
 ```bash
-curl "http://localhost:5001/api/example?type=low_risk"
+curl "http://54.160.253.120:5001/api/example?type=low_risk"
 ```
 
 ```json
@@ -288,7 +288,7 @@ python -m pytest tests/integration/ -v
 pip install locust
 
 # Run load tests
-locust -f tests/load/test_api.py --host=http://localhost:5001
+locust -f tests/load/test_api.py --host=http://54.160.253.120:5001
 ```
 
 ## 🐳 Docker Configuration

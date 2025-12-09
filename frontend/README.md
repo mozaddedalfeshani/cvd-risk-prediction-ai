@@ -126,7 +126,8 @@ Update API endpoints in components:
 
 ```typescript
 // CVDAssessmentForm.tsx
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://54.160.253.120:5001";
 
 const response = await fetch(`${API_BASE_URL}/api/predict`, {
   method: "POST",
@@ -142,7 +143,7 @@ const response = await fetch(`${API_BASE_URL}/api/predict`, {
 Create `.env.local`:
 
 ```bash
-NEXT_PUBLIC_API_URL=http://localhost:5001
+NEXT_PUBLIC_API_URL=http://54.160.253.120:5001
 NEXT_PUBLIC_APP_NAME="CVD Risk Assessment"
 NEXT_PUBLIC_MODEL_VERSION="1.0"
 ```

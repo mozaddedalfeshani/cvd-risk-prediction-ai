@@ -10,7 +10,7 @@ import time
 from typing import Dict, Any
 
 # API Configuration
-API_BASE_URL = "http://localhost:5001"
+API_BASE_URL = "http://54.160.253.120:5001"
 HEALTH_ENDPOINT = f"{API_BASE_URL}/api/health"
 PREDICT_ENDPOINT = f"{API_BASE_URL}/api/predict"
 

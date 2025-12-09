@@ -9,7 +9,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:5001
+      - NEXT_PUBLIC_API_URL=http://54.160.253.120:5001
       - NODE_ENV=production
     depends_on:
       - api
@@ -35,7 +35,7 @@ services:
     networks:
       - cvd-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5001/api/health"]
+      test: ["CMD", "curl", "-f", "http://54.160.253.120:5001/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3

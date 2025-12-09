@@ -15,7 +15,10 @@ import {
 import { useLanguage } from "@/components/providers/LanguageProvider";
 
 interface CVDAssessmentFormDualProps {
-  onSubmit: (data: { model_type: 'full'|'quick'; patient_data: Record<string, number|string> }) => void;
+  onSubmit: (data: {
+    model_type: "full" | "quick";
+    patient_data: Record<string, number | string>;
+  }) => void;
   loading: boolean;
   error: string | null;
 }
@@ -37,19 +40,21 @@ export default function CVDAssessmentFormDual({
 }: CVDAssessmentFormDualProps) {
   const { t } = useLanguage();
   const DERIVED_FIELDS = useState<string[]>([
-    'Age_Group',
-    'BMI_Category',
-    'Pulse_Pressure',
-    'Cholesterol_HDL_Ratio',
-    'LDL_HDL_Ratio',
-    'Multiple_Risk_Factors',
-    'Waist-to-Height Ratio',
+    "Age_Group",
+    "BMI_Category",
+    "Pulse_Pressure",
+    "Cholesterol_HDL_Ratio",
+    "LDL_HDL_Ratio",
+    "Multiple_Risk_Factors",
+    "Waist-to-Height Ratio",
   ])[0];
-  const [selectedModel, setSelectedModel] = useState<string>('full');
+  const [selectedModel, setSelectedModel] = useState<string>("full");
   const [availableModels, setAvailableModels] = useState<ModelOption[]>([]);
   const [requiredFeatures, setRequiredFeatures] = useState<string[]>([]);
   const [allServerFeatures, setAllServerFeatures] = useState<string[]>([]);
-  const [featureCategories, setFeatureCategories] = useState<Record<string, string[]>>({});
+  const [featureCategories, setFeatureCategories] = useState<
+    Record<string, string[]>
+  >({});
   const [formData, setFormData] = useState<Record<string, string>>({});
 
   // Load available models on component mount
@@ -66,43 +71,47 @@ export default function CVDAssessmentFormDual({
 
   const fetchAvailableModels = async () => {
     try {
-      const response = await fetch(`http://localhost:5001/api/models`);
+      const response = await fetch(`http://54.160.253.120:5001/api/models`);
       const data = await response.json();
       setAvailableModels(data.available_models || []);
       if (data.default_model) {
         setSelectedModel(data.default_model);
       }
     } catch (error) {
-      console.error('Error fetching models:', error);
+      console.error("Error fetching models:", error);
     }
   };
 
   const fetchModelFeatures = async (modelType: string) => {
     try {
-      const response = await fetch(`http://localhost:5001/api/features/${modelType}`);
+      const response = await fetch(
+        `http://54.160.253.120:5001/api/features/${modelType}`
+      );
       const data = await response.json();
       const serverFeatures: string[] = data.required_features || [];
       setAllServerFeatures(serverFeatures);
       // Hide derived fields from the UI; they will be auto-computed on submit
-      const displayFeatures = serverFeatures.filter((f: string) => !DERIVED_FIELDS.includes(f));
+      const displayFeatures = serverFeatures.filter(
+        (f: string) => !DERIVED_FIELDS.includes(f)
+      );
       setRequiredFeatures(displayFeatures);
       setFeatureCategories(data.categories || {});
-      
+
       // Reset form data when switching models
       const newFormData: Record<string, string> = {};
       displayFeatures.forEach((feature: string) => {
-        newFormData[feature] = '';
+        newFormData[feature] = "";
       });
       setFormData(newFormData);
     } catch (error) {
-      console.error('Error fetching features:', error);
+      console.error("Error fetching features:", error);
     }
   };
 
   const loadExampleData = async (riskType: string) => {
     try {
       const response = await fetch(
-        `http://localhost:5001/api/example/${selectedModel}?risk=${riskType}`
+        `http://54.160.253.120:5001/api/example/${selectedModel}?risk=${riskType}`
       );
       const data = await response.json();
       if (data.example_data) {
@@ -113,29 +122,29 @@ export default function CVDAssessmentFormDual({
         setFormData(newFormData);
       }
     } catch (error) {
-      console.error('Error loading example:', error);
+      console.error("Error loading example:", error);
     }
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate required fields
-    const missingFields = requiredFeatures.filter(field => !formData[field]);
+    const missingFields = requiredFeatures.filter((field) => !formData[field]);
     if (missingFields.length > 0) {
-      alert(`Please fill in all required fields: ${missingFields.join(', ')}`);
+      alert(`Please fill in all required fields: ${missingFields.join(", ")}`);
       return;
     }
 
     // Convert string values to appropriate types
-    const processedData: Record<string, number|string> = {};
+    const processedData: Record<string, number | string> = {};
     Object.entries(formData).forEach(([key, value]) => {
       if (value.trim()) {
         processedData[key] = isNaN(Number(value)) ? value : Number(value);
@@ -143,56 +152,90 @@ export default function CVDAssessmentFormDual({
     });
 
     // Auto-compute derived features expected by the model
-    const getNum = (k: string) => (processedData[k] as number | undefined);
+    const getNum = (k: string) => processedData[k] as number | undefined;
 
     // Age_Group
-    if (allServerFeatures.includes('Age_Group') && processedData['Age'] !== undefined) {
-      const age = Number(processedData['Age']);
-      processedData['Age_Group'] = age < 35 ? 1 : age < 45 ? 2 : age < 55 ? 3 : age < 65 ? 4 : 5;
+    if (
+      allServerFeatures.includes("Age_Group") &&
+      processedData["Age"] !== undefined
+    ) {
+      const age = Number(processedData["Age"]);
+      processedData["Age_Group"] =
+        age < 35 ? 1 : age < 45 ? 2 : age < 55 ? 3 : age < 65 ? 4 : 5;
     }
     // BMI_Category (assumes BMI provided)
-    if (allServerFeatures.includes('BMI_Category') && processedData['BMI'] !== undefined) {
-      const bmi = Number(processedData['BMI']);
-      processedData['BMI_Category'] = bmi < 18.5 ? 1 : bmi < 25 ? 2 : bmi < 30 ? 3 : 4;
+    if (
+      allServerFeatures.includes("BMI_Category") &&
+      processedData["BMI"] !== undefined
+    ) {
+      const bmi = Number(processedData["BMI"]);
+      processedData["BMI_Category"] =
+        bmi < 18.5 ? 1 : bmi < 25 ? 2 : bmi < 30 ? 3 : 4;
     }
     // Pulse_Pressure
-    if (allServerFeatures.includes('Pulse_Pressure') && getNum('Systolic BP') && getNum('Diastolic BP')) {
-      processedData['Pulse_Pressure'] = Number(getNum('Systolic BP')) - Number(getNum('Diastolic BP'));
+    if (
+      allServerFeatures.includes("Pulse_Pressure") &&
+      getNum("Systolic BP") &&
+      getNum("Diastolic BP")
+    ) {
+      processedData["Pulse_Pressure"] =
+        Number(getNum("Systolic BP")) - Number(getNum("Diastolic BP"));
     }
     // Cholesterol_HDL_Ratio
-    if (allServerFeatures.includes('Cholesterol_HDL_Ratio') && getNum('Total Cholesterol (mg/dL)') && getNum('HDL (mg/dL)')) {
-      processedData['Cholesterol_HDL_Ratio'] = Number(getNum('Total Cholesterol (mg/dL)')) / Number(getNum('HDL (mg/dL)'));
+    if (
+      allServerFeatures.includes("Cholesterol_HDL_Ratio") &&
+      getNum("Total Cholesterol (mg/dL)") &&
+      getNum("HDL (mg/dL)")
+    ) {
+      processedData["Cholesterol_HDL_Ratio"] =
+        Number(getNum("Total Cholesterol (mg/dL)")) /
+        Number(getNum("HDL (mg/dL)"));
     }
     // LDL_HDL_Ratio
-    if (allServerFeatures.includes('LDL_HDL_Ratio') && getNum('Estimated LDL (mg/dL)') && getNum('HDL (mg/dL)')) {
-      processedData['LDL_HDL_Ratio'] = Number(getNum('Estimated LDL (mg/dL)')) / Number(getNum('HDL (mg/dL)'));
+    if (
+      allServerFeatures.includes("LDL_HDL_Ratio") &&
+      getNum("Estimated LDL (mg/dL)") &&
+      getNum("HDL (mg/dL)")
+    ) {
+      processedData["LDL_HDL_Ratio"] =
+        Number(getNum("Estimated LDL (mg/dL)")) / Number(getNum("HDL (mg/dL)"));
     }
     // Multiple_Risk_Factors
-    if (allServerFeatures.includes('Multiple_Risk_Factors')) {
-      const riskFlags = ['Smoking Status', 'Diabetes Status', 'Family History of CVD']
-        .map(k => Number(processedData[k] || 0))
-        .filter(v => v === 1).length;
-      processedData['Multiple_Risk_Factors'] = riskFlags;
+    if (allServerFeatures.includes("Multiple_Risk_Factors")) {
+      const riskFlags = [
+        "Smoking Status",
+        "Diabetes Status",
+        "Family History of CVD",
+      ]
+        .map((k) => Number(processedData[k] || 0))
+        .filter((v) => v === 1).length;
+      processedData["Multiple_Risk_Factors"] = riskFlags;
     }
     // Waist-to-Height Ratio
-    if (allServerFeatures.includes('Waist-to-Height Ratio') && getNum('Abdominal Circumference (cm)') && getNum('Height (m)')) {
-      processedData['Waist-to-Height Ratio'] = Number(getNum('Abdominal Circumference (cm)')) / (Number(getNum('Height (m)')) * 100);
+    if (
+      allServerFeatures.includes("Waist-to-Height Ratio") &&
+      getNum("Abdominal Circumference (cm)") &&
+      getNum("Height (m)")
+    ) {
+      processedData["Waist-to-Height Ratio"] =
+        Number(getNum("Abdominal Circumference (cm)")) /
+        (Number(getNum("Height (m)")) * 100);
     }
 
     onSubmit({
-      model_type: selectedModel as 'full'|'quick',
-      patient_data: processedData
+      model_type: selectedModel as "full" | "quick",
+      patient_data: processedData,
     });
   };
 
   const getTranslatedLabel = (field: string) => {
     // Map backend field names to translation keys
     const map: Record<string, string> = {
-      "Sex": "sex",
-      "Age": "age",
+      Sex: "sex",
+      Age: "age",
       "Weight (kg)": "weight",
       "Height (m)": "height",
-      "BMI": "bmi",
+      BMI: "bmi",
       "Systolic BP": "systolic",
       "Diastolic BP": "diastolic",
       "Blood Pressure Category": "bp_category",
@@ -206,7 +249,7 @@ export default function CVDAssessmentFormDual({
       "Physical Activity Level": "activity",
       "Abdominal Circumference (cm)": "waist",
       "Waist-to-Height Ratio": "waist_ratio",
-      "CVD Risk Score": "cvd_score"
+      "CVD Risk Score": "cvd_score",
     };
     const key = map[field] as keyof typeof t.form.labels;
     return key ? t.form.labels[key] || field : field;
@@ -220,9 +263,18 @@ export default function CVDAssessmentFormDual({
         </Label>
         <Input
           id={field}
-          type={field.includes('Sex') || field.includes('Status') || field.includes('Category') || field.includes('Level') ? 'number' : 'number'}
-          step={field.includes('Height') || field.includes('Ratio') ? '0.01' : '1'}
-          value={formData[field] || ''}
+          type={
+            field.includes("Sex") ||
+            field.includes("Status") ||
+            field.includes("Category") ||
+            field.includes("Level")
+              ? "number"
+              : "number"
+          }
+          step={
+            field.includes("Height") || field.includes("Ratio") ? "0.01" : "1"
+          }
+          value={formData[field] || ""}
           onChange={(e) => handleInputChange(field, e.target.value)}
           placeholder={`Enter ${getTranslatedLabel(field).toLowerCase()}`}
           className="w-full"
@@ -231,7 +283,7 @@ export default function CVDAssessmentFormDual({
     );
   };
 
-  const selectedModelInfo = availableModels.find(m => m.id === selectedModel);
+  const selectedModelInfo = availableModels.find((m) => m.id === selectedModel);
 
   return (
     <div className="space-y-6">
@@ -250,11 +302,10 @@ export default function CVDAssessmentFormDual({
                 key={model.id}
                 className={`p-4 border rounded-lg cursor-pointer transition-all ${
                   selectedModel === model.id
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
                 }`}
-                onClick={() => setSelectedModel(model.id)}
-              >
+                onClick={() => setSelectedModel(model.id)}>
                 <div className="flex items-center space-x-2 mb-2">
                   <input
                     type="radio"
@@ -264,11 +315,15 @@ export default function CVDAssessmentFormDual({
                   />
                   <h3 className="font-semibold">{model.name}</h3>
                 </div>
-                <p className="text-sm text-gray-600 mb-2">{model.description}</p>
+                <p className="text-sm text-gray-600 mb-2">
+                  {model.description}
+                </p>
                 <div className="text-sm space-y-1">
                   <div className="flex justify-between">
                     <span>Accuracy:</span>
-                    <span className="font-medium text-green-600">{model.accuracy}</span>
+                    <span className="font-medium text-green-600">
+                      {model.accuracy}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Features:</span>
@@ -279,7 +334,9 @@ export default function CVDAssessmentFormDual({
                     <span className="font-medium">{model.time_required}</span>
                   </div>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">{model.recommended_for}</p>
+                <p className="text-xs text-gray-500 mt-2">
+                  {model.recommended_for}
+                </p>
               </div>
             ))}
           </div>
@@ -287,8 +344,9 @@ export default function CVDAssessmentFormDual({
           {selectedModelInfo && (
             <div className="p-3 bg-gray-50 rounded-lg">
               <p className="text-sm">
-                <strong>Selected:</strong> {selectedModelInfo.name} - {selectedModelInfo.accuracy} accuracy
-                with {selectedModelInfo.features} features
+                <strong>Selected:</strong> {selectedModelInfo.name} -{" "}
+                {selectedModelInfo.accuracy} accuracy with{" "}
+                {selectedModelInfo.features} features
               </p>
             </div>
           )}
@@ -308,17 +366,15 @@ export default function CVDAssessmentFormDual({
             <Button
               type="button"
               variant="outline"
-              onClick={() => loadExampleData('low')}
-              className="flex-1"
-            >
+              onClick={() => loadExampleData("low")}
+              className="flex-1">
               Load Low Risk Example
             </Button>
             <Button
               type="button"
               variant="outline"
-              onClick={() => loadExampleData('high')}
-              className="flex-1"
-            >
+              onClick={() => loadExampleData("high")}
+              className="flex-1">
               Load High Risk Example
             </Button>
           </div>
@@ -329,10 +385,11 @@ export default function CVDAssessmentFormDual({
       <Card>
         <CardHeader>
           <CardTitle>
-            {selectedModelInfo?.name || 'CVD Risk Assessment'}
+            {selectedModelInfo?.name || "CVD Risk Assessment"}
           </CardTitle>
           <CardDescription>
-            Please fill in all required fields for {selectedModelInfo?.name.toLowerCase() || 'assessment'}
+            Please fill in all required fields for{" "}
+            {selectedModelInfo?.name.toLowerCase() || "assessment"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -360,8 +417,7 @@ export default function CVDAssessmentFormDual({
               <Button
                 type="submit"
                 disabled={loading || requiredFeatures.length === 0}
-                className="flex-1"
-              >
+                className="flex-1">
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />

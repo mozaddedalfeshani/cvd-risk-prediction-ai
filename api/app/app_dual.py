@@ -356,7 +356,7 @@ if __name__ == '__main__':
     print("="*60)
     print(f"Full Model: {'✅ Loaded' if full_model else '❌ Not available'}")
     print(f"Quick Model: {'✅ Loaded' if quick_model else '❌ Not available'}")
-    print(f"API available at: http://localhost:5001")
+    print(f"API available at: http://54.160.253.120:5001")
     print(f"Model options: /api/models")
     print(f"Health check: /api/health")
     app.run(host='0.0.0.0', port=5001, debug=True)
