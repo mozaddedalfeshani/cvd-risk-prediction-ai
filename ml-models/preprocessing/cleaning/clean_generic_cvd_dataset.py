@@ -1,14 +1,19 @@
 import pandas as pd
 import numpy as np
 from sklearn.impute import KNNImputer
+from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
+
+ROOT_DIR = Path(__file__).resolve().parents[2]
+DEFAULT_INPUT = ROOT_DIR / 'data' / 'raw' / 'Raw_Dataset.csv'
+DEFAULT_OUTPUT = ROOT_DIR / 'data' / 'processed' / 'CVD_Dataset_ML_Ready.csv'
 
 print("="*80)
 print("COMPREHENSIVE DATA CLEANING FOR OPTIMAL ML PERFORMANCE")
 print("="*80)
 
-def clean_cvd_dataset(input_file='Raw_Dataset.csv', output_file='CVD_Dataset_ML_Ready.csv'):
+def clean_cvd_dataset(input_file=DEFAULT_INPUT, output_file=DEFAULT_OUTPUT):
     """
     Comprehensive data cleaning pipeline for CVD dataset to achieve maximum ML accuracy
     """
@@ -281,7 +286,7 @@ def clean_cvd_dataset(input_file='Raw_Dataset.csv', output_file='CVD_Dataset_ML_
 
 if __name__ == "__main__":
     # Run the comprehensive cleaning pipeline
-    cleaned_df = clean_cvd_dataset()
+    cleaned_df = clean_cvd_dataset(DEFAULT_INPUT, DEFAULT_OUTPUT)
     
     print(f"\n🎯 Cleaned dataset saved successfully!")
     print(f"📊 Ready for high-accuracy machine learning models!")

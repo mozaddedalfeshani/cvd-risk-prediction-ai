@@ -8,15 +8,20 @@ from lightgbm import LGBMClassifier
 from sklearn.metrics import accuracy_score
 from imblearn.combine import SMOTEENN
 import joblib
+from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
+
+ROOT_DIR = Path(__file__).resolve().parents[2]
+DEFAULT_DATASET = ROOT_DIR / 'data' / 'processed' / 'MymensingUniversity_ML_Ready.csv'
+MODELS_DIR = ROOT_DIR / 'models'
 
 print("="*60)
 print("SAVING FULL ACCURACY MODEL (95.91%)")
 print("="*60)
 
 # Load dataset
-df = pd.read_csv('data/CVD_Dataset_ML_Ready.csv')
+df = pd.read_csv(DEFAULT_DATASET)
 X = df.drop('CVD Risk Level', axis=1)
 y = df['CVD Risk Level']
 
@@ -92,6 +97,8 @@ full_model_artifact = {
     'version': '2.0'
 }
 
-joblib.dump(full_model_artifact, 'models/cvd_full_model.pkl')
-print("✅ Saved Full Accuracy Model to models/cvd_full_model.pkl")
+MODELS_DIR.mkdir(parents=True, exist_ok=True)
+model_output = MODELS_DIR / 'cvd_full_model.pkl'
+joblib.dump(full_model_artifact, model_output)
+print(f"✅ Saved Full Accuracy Model to {model_output}")
 print(f"📊 Model ready for dual deployment!")

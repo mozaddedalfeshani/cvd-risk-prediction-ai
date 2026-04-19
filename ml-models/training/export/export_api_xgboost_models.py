@@ -7,15 +7,20 @@ from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score
 from imblearn.combine import SMOTEENN
 import joblib
+from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
+
+ROOT_DIR = Path(__file__).resolve().parents[2]
+DEFAULT_DATASET = ROOT_DIR / 'data' / 'processed' / 'MymensingUniversity_ML_Ready.csv'
+MODELS_DIR = ROOT_DIR / 'models'
 
 print("="*60)
 print("SAVING XGBoost-ONLY MODELS FOR API")
 print("="*60)
 
 # Load dataset
-df = pd.read_csv('data/CVD_Dataset_ML_Ready.csv')
+df = pd.read_csv(DEFAULT_DATASET)
 X = df.drop('CVD Risk Level', axis=1)
 y = df['CVD Risk Level']
 
@@ -66,8 +71,10 @@ full_model_artifact = {
     'model_type': 'Full Accuracy',
     'version': '2.0'
 }
-joblib.dump(full_model_artifact, 'models/cvd_full_xgb.pkl')
-print("✅ Saved Full XGBoost Model")
+MODELS_DIR.mkdir(parents=True, exist_ok=True)
+full_output = MODELS_DIR / 'cvd_full_xgb.pkl'
+joblib.dump(full_model_artifact, full_output)
+print(f"✅ Saved Full XGBoost Model to {full_output}")
 
 # Train QUICK model (8 features)
 quick_features = [
@@ -107,8 +114,9 @@ quick_model_artifact = {
     'model_type': 'Quick Assessment',
     'version': '2.0'
 }
-joblib.dump(quick_model_artifact, 'models/cvd_quick_xgb.pkl')
-print("✅ Saved Quick XGBoost Model")
+quick_output = MODELS_DIR / 'cvd_quick_xgb.pkl'
+joblib.dump(quick_model_artifact, quick_output)
+print(f"✅ Saved Quick XGBoost Model to {quick_output}")
 
 print(f"\n📊 Summary:")
 print(f"Full Model (XGBoost): {full_acc*100:.2f}% - {len(important_features)} features")

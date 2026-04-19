@@ -2,13 +2,19 @@ import joblib
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).resolve().parents[2]
+MODELS_DIR = ROOT_DIR / 'models'
+FIGURES_DIR = ROOT_DIR / 'evaluation' / 'reports' / 'figures'
+FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 
 # Set style
 plt.style.use('seaborn-v0_8-darkgrid')
 sns.set_palette("husl")
 
 print("Loading trained model...")
-model_data = joblib.load('models/xgboost_model.pkl')
+model_data = joblib.load(MODELS_DIR / 'xgboost_model.pkl')
 history = model_data['cv_history']
 
 print("Generating accuracy and loss graphs...")
@@ -113,8 +119,9 @@ fig.text(0.5, 0.02, stats_text, ha='center', fontsize=12,
          bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.3))
 
 plt.tight_layout(rect=[0, 0.06, 1, 1])
-plt.savefig('evaluation/accuracy_loss_graph.png', dpi=300, bbox_inches='tight')
-print("✅ Saved: evaluation/accuracy_loss_graph.png")
+combined_output = FIGURES_DIR / 'accuracy_loss_graph.png'
+plt.savefig(combined_output, dpi=300, bbox_inches='tight')
+print(f"✅ Saved: {combined_output}")
 plt.close()
 
 # ============================================
@@ -152,8 +159,9 @@ ax.text(0.02, 0.98, f'Final Test Accuracy: {test_acc*100:.2f}%',
         bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.7))
 
 plt.tight_layout()
-plt.savefig('evaluation/model_accuracy.png', dpi=300, bbox_inches='tight')
-print("✅ Saved: evaluation/model_accuracy.png")
+accuracy_output = FIGURES_DIR / 'model_accuracy.png'
+plt.savefig(accuracy_output, dpi=300, bbox_inches='tight')
+print(f"✅ Saved: {accuracy_output}")
 plt.close()
 
 # ============================================
@@ -190,8 +198,9 @@ ax.text(0.02, 0.98, f'Final Test Loss: {test_loss:.4f}',
         bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.7))
 
 plt.tight_layout()
-plt.savefig('evaluation/model_loss.png', dpi=300, bbox_inches='tight')
-print("✅ Saved: evaluation/model_loss.png")
+loss_output = FIGURES_DIR / 'model_loss.png'
+plt.savefig(loss_output, dpi=300, bbox_inches='tight')
+print(f"✅ Saved: {loss_output}")
 plt.close()
 
 print("\n" + "="*60)
@@ -204,6 +213,6 @@ print(f"\nTraining Loss: {train_loss_mean:.4f} ± {np.std(history['train_loss'])
 print(f"Validation Loss: {val_loss_mean:.4f} ± {np.std(history['val_loss']):.4f}")
 print(f"Test Loss: {test_loss:.4f}")
 print("\n✅ All graphs generated successfully!")
-print("   - evaluation/accuracy_loss_graph.png (combined)")
-print("   - evaluation/model_accuracy.png (detailed)")
-print("   - evaluation/model_loss.png (detailed)")
+print(f"   - {combined_output} (combined)")
+print(f"   - {accuracy_output} (detailed)")
+print(f"   - {loss_output} (detailed)")

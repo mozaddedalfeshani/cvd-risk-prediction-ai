@@ -1,237 +1,76 @@
-# 🔬 Machine Learning Models
+# ML Models Workspace
 
-## 🎯 Overview
+This folder is now organized so a new contributor can quickly understand what is used for data preparation, model development, evaluation, and ready-made artifacts.
 
-Advanced cardiovascular disease risk prediction models achieving **95.91% accuracy** through ensemble methods and sophisticated feature engineering.
+## Quick Navigation
 
-## 📁 Structure
+| Folder | Purpose | Use this when |
+| --- | --- | --- |
+| `data/raw/` | Original collected CSV files | You want to inspect the untouched source data |
+| `data/processed/` | ML-ready datasets after cleaning and feature engineering | You want to train or evaluate a model |
+| `preprocessing/cleaning/` | Cleaning scripts that convert raw data into processed data | You want to regenerate the ML-ready dataset |
+| `preprocessing/research/` | Research notes and analysis helpers | You want supporting analysis, not model training |
+| `training/experiments/` | Scripts for developing and testing models | You want to build or compare models |
+| `training/export/` | Scripts that save deployable `.pkl` files | You want ready-made model artifacts for the app/API |
+| `evaluation/scripts/` | Plotting and evaluation utilities | You want charts, comparisons, or dataset visuals |
+| `evaluation/reports/` | Generated figures and logs | You want to view saved outputs |
+| `models/` | Ready-made trained model files (`.pkl`) | You want to load an already-trained model |
 
-```
-ml-models/
-├── models/
-│   ├── advanced/           # Production-ready models
-│   │   └── murad_ensemble.py   # 95.91% accuracy ensemble
-│   └── baseline/           # Baseline comparisons
-│       ├── lightgbm_model.py   # 66.54%
-│       ├── catboost_model.py   # 68.44%
-│       └── xgboost_model.py    # 65.40%
-├── data/
-│   ├── raw/               # Original datasets
-│   └── processed/         # Cleaned, ML-ready data
-├── preprocessing/         # Data cleaning pipeline
-├── evaluation/           # Model validation & comparison
-└── requirements.txt      # ML dependencies
-```
+## Start Here
 
-## 🚀 Quick Start
+If you want to understand the folder fast, use this order:
 
-### Install Dependencies
+1. Read `data/README.md`
+2. Read `training/README.md`
+3. Read `models/README.md`
+4. Read `evaluation/README.md`
 
-```bash
-cd ml-models
-pip install -r requirements.txt
-```
+## Which File Does What?
 
-### Run Advanced Model (95.91% accuracy)
+### For data cleaning
 
-```bash
-python models/advanced/murad_ensemble.py
-```
+- `preprocessing/cleaning/clean_mymensing_dataset.py`
+  Converts the Mymensing dataset into the processed ML-ready CSV.
+- `preprocessing/cleaning/clean_generic_cvd_dataset.py`
+  Generic cleaning pipeline for the broader raw CVD dataset.
 
-### Run Baseline Models
+### For developing models
 
-```bash
-python models/baseline/lightgbm_model.py
-python models/baseline/catboost_model.py
-python models/baseline/xgboost_model.py
-```
+- `training/experiments/comprehensive_xgboost_training.py`
+  Trains the larger comprehensive XGBoost experiment and saves evaluation figures.
+- `training/experiments/quick_assessment_ensemble_training.py`
+  Trains the smaller quick-assessment ensemble experiment.
 
-### Performance Comparison
+### For exporting ready-made models
 
-```bash
-python evaluation/performance_comparison.py
-```
+- `training/export/export_api_xgboost_models.py`
+  Exports API-friendly XGBoost model artifacts into `models/`.
+- `training/export/export_full_ensemble_model.py`
+  Exports the full ensemble model artifact into `models/`.
 
-## 🏆 Model Performance
+### For evaluation and visualization
 
-| Model        | Accuracy   | Precision | Recall    | F1-Score  | Clinical Grade |
-| ------------ | ---------- | --------- | --------- | --------- | -------------- |
-| **Ensemble** | **95.91%** | **96.0%** | **96.0%** | **95.9%** | ✅ **Yes**     |
-| LightGBM     | 66.54%     | 67.1%     | 65.8%     | 66.4%     | ❌ No          |
-| CatBoost     | 68.44%     | 69.2%     | 67.5%     | 68.3%     | ❌ No          |
-| XGBoost      | 65.40%     | 66.8%     | 64.1%     | 65.4%     | ❌ No          |
+- `evaluation/scripts/plot_training_metrics.py`
+  Builds accuracy/loss plots from a saved model artifact.
+- `evaluation/scripts/plot_performance_comparison.py`
+  Generates a model comparison figure.
+- `evaluation/scripts/visualize_dataset.py`
+  Creates dataset summary charts from a CSV file.
 
-## 🔬 Advanced Ensemble Model
+### For ready-made models
 
-### Key Features
+- `models/cvd_full_xgb.pkl`
+- `models/cvd_quick_xgb.pkl`
+- `models/cvd_quick_model.pkl`
+- `models/xgboost_model.pkl`
 
-- **Multi-algorithm ensemble**: Combines XGBoost, LightGBM, and CatBoost
-- **Feature engineering**: 27 engineered features from 22 original
-- **Class balancing**: SMOTE for handling imbalanced data
-- **Hyperparameter optimization**: Grid search with cross-validation
-- **Clinical validation**: Meets healthcare AI standards
+These are already trained artifacts. You load them for inference or API integration. You do not edit them manually.
 
-### Model Components
+## Suggested Workflow
 
-1. **XGBoost**: Gradient boosting with tree-based learning
-2. **LightGBM**: Efficient gradient boosting framework
-3. **CatBoost**: Handles categorical features automatically
-4. **Ensemble Voting**: Weighted average of predictions
-
-### Feature Categories
-
-- **Demographics**: Age, sex, BMI, height, weight
-- **Vital Signs**: Blood pressure, heart rate, pulse pressure
-- **Laboratory**: Cholesterol levels, blood glucose
-- **Lifestyle**: Smoking, physical activity, family history
-- **Derived Metrics**: BMI categories, cholesterol ratios
-
-## 📊 Data Pipeline
-
-### Preprocessing Steps
-
-1. **Data Cleaning**: Handle missing values and outliers
-2. **Feature Engineering**: Create derived clinical metrics
-3. **Normalization**: Scale features for model compatibility
-4. **Class Balancing**: SMOTE for minority class enhancement
-5. **Validation**: 5-fold cross-validation
-
-### Data Quality
-
-- **Original Dataset**: 1,531 patients, 22 features
-- **Processed Dataset**: 1,311 patients, 27 features
-- **Missing Data**: <2% after cleaning
-- **Feature Correlation**: Optimized for clinical relevance
-
-## 🧪 Model Validation
-
-### Cross-Validation Results
-
-```
-Fold 1: 94.1% accuracy
-Fold 2: 92.8% accuracy
-Fold 3: 93.6% accuracy
-Fold 4: 92.9% accuracy
-Fold 5: 93.3% accuracy
-Average: 93.15% ± 0.5%
-```
-
-### Clinical Validation
-
-- **Sensitivity**: 94.2% (detects high-risk patients)
-- **Specificity**: 92.8% (correctly identifies low-risk)
-- **NPV**: 95.1% (negative predictive value)
-- **PPV**: 91.7% (positive predictive value)
-
-## 🎯 Production Usage
-
-### Model Loading
-
-```python
-import joblib
-from models.advanced.murad_ensemble import CVDRiskPredictor
-
-# Load trained model
-model = joblib.load('models/cvd_production_model.pkl')
-
-# Make prediction
-risk_score = model.predict(patient_data)
-risk_level = model.predict_proba(patient_data)
-```
-
-### API Integration
-
-```python
-from api.app.utils.model_loader import load_cvd_model
-
-# Load in API server
-model = load_cvd_model()
-prediction = model.predict(request_data)
-```
-
-## 📈 Feature Importance
-
-### Top Risk Factors
-
-1. **Age** (18.5%) - Primary demographic factor
-2. **Systolic BP** (15.2%) - Key cardiovascular indicator
-3. **Total Cholesterol** (12.8%) - Lipid profile importance
-4. **BMI** (10.3%) - Obesity-related risk
-5. **Smoking Status** (9.7%) - Lifestyle risk factor
-
-### Clinical Insights
-
-- Age and blood pressure are strongest predictors
-- Cholesterol levels show high predictive value
-- Lifestyle factors significantly impact risk
-- Combined metrics outperform individual measures
-
-## 🔧 Development
-
-### Adding New Models
-
-1. Create model file in appropriate directory
-2. Follow the base model interface
-3. Add validation and testing
-4. Update performance comparison
-
-### Model Training
-
-```bash
-# Train new model
-python models/advanced/train_new_model.py
-
-# Validate performance
-python evaluation/validate_model.py
-
-# Compare with baselines
-python evaluation/performance_comparison.py
-```
-
-### Hyperparameter Tuning
-
-```bash
-# Grid search optimization
-python models/advanced/hyperparameter_search.py
-
-# Cross-validation testing
-python evaluation/cross_validation.py
-```
-
-## 📋 Requirements
-
-### Core Dependencies
-
-- `scikit-learn>=1.3.0` - Machine learning algorithms
-- `xgboost>=2.0.0` - Gradient boosting
-- `lightgbm>=4.0.0` - Efficient boosting
-- `catboost>=1.2.0` - Categorical boosting
-- `pandas>=2.0.0` - Data manipulation
-- `numpy>=1.24.0` - Numerical computing
-
-### Optional Dependencies
-
-- `shap>=0.42.0` - Model explainability
-- `optuna>=3.0.0` - Hyperparameter optimization
-- `matplotlib>=3.7.0` - Visualization
-- `seaborn>=0.12.0` - Statistical plots
-
-## 🏥 Clinical Deployment
-
-### Model Validation
-
-- Validated on independent test sets
-- Clinical expert review completed
-- Regulatory compliance considerations
-- Performance monitoring protocols
-
-### Integration Points
-
-- Electronic Health Records (EHR)
-- Clinical Decision Support Systems
-- Population Health Management
-- Preventive Care Protocols
-
----
-
-**🎯 Ready for clinical deployment with 93.15% accuracy!**
+1. Inspect raw data in `data/raw/`
+2. Run cleaning scripts from `preprocessing/cleaning/`
+3. Train experiments from `training/experiments/`
+4. Export deployable artifacts from `training/export/`
+5. Review generated results in `evaluation/reports/`
+6. Use ready-made `.pkl` files from `models/`

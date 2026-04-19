@@ -13,8 +13,11 @@ Date: 2024
 
 import pandas as pd
 import numpy as np
+from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
+
+ROOT_DIR = Path(__file__).resolve().parents[2]
 
 def clean_mymensinguniversity_dataset(input_file, output_file):
     """
@@ -317,8 +320,8 @@ def clean_mymensinguniversity_dataset(input_file, output_file):
 
 if __name__ == "__main__":
     # Define file paths
-    input_file = "../data/MymensingUniversity.csv"
-    output_file = "../data/MymensingUniversity_ML_Ready.csv"
+    input_file = ROOT_DIR / "data" / "raw" / "MymensingUniversity.csv"
+    output_file = ROOT_DIR / "data" / "processed" / "MymensingUniversity_ML_Ready.csv"
     
     # Run the cleaning pipeline
     try:

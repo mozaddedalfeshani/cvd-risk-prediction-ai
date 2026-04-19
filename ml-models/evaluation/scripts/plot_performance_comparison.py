@@ -1,6 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).resolve().parents[2]
+FIGURES_DIR = ROOT_DIR / 'evaluation' / 'reports' / 'figures'
+FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 
 # Set style
 plt.style.use('seaborn-v0_8')
@@ -58,7 +63,8 @@ ax2.annotate(f'+{improvement:.1f}%',
              fontsize=12, fontweight='bold', ha='center')
 
 plt.tight_layout()
-plt.savefig('performance_comparison.png', dpi=300, bbox_inches='tight')
+output_path = FIGURES_DIR / 'performance_comparison.png'
+plt.savefig(output_path, dpi=300, bbox_inches='tight')
 plt.show()
 
 # Create detailed comparison table
@@ -88,3 +94,4 @@ print(f"📈 Improvement: +{improvement:.1f}%")
 print(f"🎯 Clinical Threshold (85%): {'✅ EXCEEDED' if advanced_avg > 85 else '❌ NOT MET'}")
 print(f"🏥 Clinical Grade: ✅ ACHIEVED")
 print(f"📚 Research Quality: ✅ PUBLICATION READY") 
+print(f"🖼️ Figure saved to: {output_path}")

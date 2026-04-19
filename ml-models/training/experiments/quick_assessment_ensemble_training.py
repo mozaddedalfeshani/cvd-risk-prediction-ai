@@ -8,14 +8,19 @@ from lightgbm import LGBMClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from imblearn.combine import SMOTEENN
 import joblib
+from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
+
+ROOT_DIR = Path(__file__).resolve().parents[2]
+DEFAULT_DATASET = ROOT_DIR / 'data' / 'processed' / 'MymensingUniversity_ML_Ready.csv'
+MODELS_DIR = ROOT_DIR / 'models'
 
 print("="*80)
 print("QUICK ASSESSMENT MODEL - 8 KEY FEATURES ONLY")
 print("="*80)
 
-def train_quick_model(dataset_file='data/CVD_Dataset_ML_Ready.csv'):
+def train_quick_model(dataset_file=DEFAULT_DATASET):
     """
     Train a quick assessment model using only 8 most important features
     Target: 90%+ accuracy with minimal input burden
@@ -23,7 +28,8 @@ def train_quick_model(dataset_file='data/CVD_Dataset_ML_Ready.csv'):
     
     # 1. Load dataset
     print("\n1. Loading dataset...")
-    df = pd.read_csv(dataset_file)
+    dataset_path = Path(dataset_file)
+    df = pd.read_csv(dataset_path)
     print(f"Dataset shape: {df.shape}")
     
     # 2. Use only top 8 most important features for quick assessment
@@ -183,8 +189,10 @@ def train_quick_model(dataset_file='data/CVD_Dataset_ML_Ready.csv'):
         'version': '2.0'
     }
     
-    joblib.dump(model_artifact, 'models/cvd_quick_model.pkl')
-    print("✅ Saved model to models/cvd_quick_model.pkl")
+    MODELS_DIR.mkdir(parents=True, exist_ok=True)
+    model_output = MODELS_DIR / 'cvd_quick_model.pkl'
+    joblib.dump(model_artifact, model_output)
+    print(f"✅ Saved model to {model_output}")
     
     # 13. Summary
     print("\n" + "="*80)
@@ -218,7 +226,7 @@ def train_quick_model(dataset_file='data/CVD_Dataset_ML_Ready.csv'):
 
 if __name__ == "__main__":
     print("🚀 Training Quick Assessment CVD risk prediction model...")
-    results = train_quick_model('data/CVD_Dataset_ML_Ready.csv')
+    results = train_quick_model(DEFAULT_DATASET)
     print(f"\n🎉 Quick model training complete!")
     print(f"🎯 Quick Assessment accuracy: {results['accuracy']*100:.2f}%")
     print(f"📊 Using only {len(results['feature_names'])} key features")

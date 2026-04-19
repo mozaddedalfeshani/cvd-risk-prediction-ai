@@ -9,8 +9,14 @@ from imblearn.combine import SMOTEENN
 import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
+from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
+
+ROOT_DIR = Path(__file__).resolve().parents[2]
+DEFAULT_DATASET = ROOT_DIR / 'data' / 'processed' / 'MymensingUniversity_ML_Ready.csv'
+FIGURES_DIR = ROOT_DIR / 'evaluation' / 'reports' / 'figures'
+MODELS_DIR = ROOT_DIR / 'models'
 
 # Set style for better plots
 plt.style.use('seaborn-v0_8-darkgrid')
@@ -171,14 +177,15 @@ def plot_per_class_metrics(cm, class_names, filename='per_class_metrics.png'):
     print(f"✅ Saved: {filename}")
     plt.close()
 
-def train_comprehensive_model(dataset_file='data/CVD_Dataset_ML_Ready.csv', n_folds=5):
+def train_comprehensive_model(dataset_file=DEFAULT_DATASET, n_folds=5):
     """
     Train comprehensive XGBoost model with detailed analysis and visualization
     """
     
     # 1. Load dataset
     print("\n1. Loading dataset...")
-    df = pd.read_csv(dataset_file)
+    dataset_path = Path(dataset_file)
+    df = pd.read_csv(dataset_path)
     print(f"   Dataset shape: {df.shape}")
     print(f"   Missing values: {df.isnull().sum().sum()}")
     
@@ -219,7 +226,10 @@ def train_comprehensive_model(dataset_file='data/CVD_Dataset_ML_Ready.csv', n_fo
     X_test_scaled = scaler.transform(X_test)
     
     # Plot class distribution
-    plot_class_distribution(y_train, y_test, class_names, 'evaluation/class_distribution.png')
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    MODELS_DIR.mkdir(parents=True, exist_ok=True)
+
+    plot_class_distribution(y_train, y_test, class_names, FIGURES_DIR / 'class_distribution.png')
     
     # 6. Cross-validation with detailed tracking
     print("\n6. Performing 5-fold cross-validation...")
@@ -343,17 +353,17 @@ def train_comprehensive_model(dataset_file='data/CVD_Dataset_ML_Ready.csv', n_fo
     cm = confusion_matrix(y_test, y_test_pred)
     plot_confusion_matrix(cm, class_names, 
                          title='Confusion Matrix - XGBoost Model',
-                         filename='evaluation/confusion_matrix.png')
+                         filename=FIGURES_DIR / 'confusion_matrix.png')
     
     # Training history
-    plot_training_history(history, filename='evaluation/training_history.png')
+    plot_training_history(history, filename=FIGURES_DIR / 'training_history.png')
     
     # Feature importance
     plot_feature_importance(final_model, feature_names, 
-                           filename='evaluation/feature_importance.png')
+                           filename=FIGURES_DIR / 'feature_importance.png')
     
     # Per-class metrics
-    plot_per_class_metrics(cm, class_names, filename='evaluation/per_class_metrics.png')
+    plot_per_class_metrics(cm, class_names, filename=FIGURES_DIR / 'per_class_metrics.png')
     
     # 10. Print detailed results
     print("\n" + "="*80)
@@ -412,8 +422,9 @@ def train_comprehensive_model(dataset_file='data/CVD_Dataset_ML_Ready.csv', n_fo
         'version': '3.0'
     }
     
-    joblib.dump(model_artifact, 'models/cvd_comprehensive_model.pkl')
-    print("   ✅ Saved model to: models/cvd_comprehensive_model.pkl")
+    model_output = MODELS_DIR / 'cvd_comprehensive_model.pkl'
+    joblib.dump(model_artifact, model_output)
+    print(f"   ✅ Saved model to: {model_output}")
     
     # 12. Summary
     print("\n" + "="*80)
@@ -427,7 +438,7 @@ def train_comprehensive_model(dataset_file='data/CVD_Dataset_ML_Ready.csv', n_fo
     print(f"✅ Test F1 Score: {test_f1:.4f}")
     print(f"✅ Test Log Loss: {test_loss:.4f}")
     print(f"✅ Cross-validation: {n_folds}-fold stratified")
-    print(f"✅ Visualizations saved to: evaluation/")
+    print(f"✅ Visualizations saved to: {FIGURES_DIR}")
     
     if test_accuracy >= 0.90:
         print("\n🎉 EXCELLENT! Achieved 90%+ accuracy!")
@@ -445,18 +456,18 @@ if __name__ == "__main__":
     print("📊 This will generate detailed metrics and visualizations\n")
     
     # Train the model
-    results = train_comprehensive_model('data/CVD_Dataset_ML_Ready.csv', n_folds=5)
+    results = train_comprehensive_model(DEFAULT_DATASET, n_folds=5)
     
     print("\n" + "="*80)
     print("🎉 TRAINING COMPLETE!")
     print("="*80)
     print(f"✅ Model accuracy: {results['test_accuracy']*100:.2f}%")
     print(f"✅ Model F1 score: {results['test_f1']:.4f}")
-    print(f"✅ All visualizations saved to: evaluation/")
+    print(f"✅ All visualizations saved to: {FIGURES_DIR}")
     print("   - confusion_matrix.png")
     print("   - training_history.png")
     print("   - feature_importance.png")
     print("   - per_class_metrics.png")
     print("   - class_distribution.png")
-    print(f"✅ Model saved to: models/cvd_comprehensive_model.pkl")
+    print(f"✅ Model saved to: {MODELS_DIR / 'cvd_comprehensive_model.pkl'}")
     print("\n💾 Ready for deployment!")

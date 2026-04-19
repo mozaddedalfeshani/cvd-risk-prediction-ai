@@ -3,18 +3,17 @@
 Dataset Visualization Utility
 -----------------------------
 Generates charts/graphs for the CVD datasets used in this project.
-Outputs figures to docs/research/figures/ for inclusion in reports.
+Outputs figures to ml-models/evaluation/reports/ for inclusion in reports.
 
 Usage:
-  python ml-models/evaluation/visualize_dataset.py \
-    --dataset ml-models/data/raw/MymensingUniversity_ML_Ready.csv \
+  python ml-models/evaluation/scripts/visualize_dataset.py \
+    --dataset ml-models/data/processed/MymensingUniversity_ML_Ready.csv \
     --target "CVD Risk Level"
 
 Dependencies: pandas, numpy, matplotlib, seaborn
 """
 
 import argparse
-import os
 from pathlib import Path
 from typing import Optional
 
@@ -116,7 +115,12 @@ def main():
     parser = argparse.ArgumentParser(description="Generate dataset charts/graphs for appendix")
     parser.add_argument("--dataset", type=str, required=True, help="Path to CSV dataset")
     parser.add_argument("--target", type=str, default="CVD Risk Level", help="Target column name")
-    parser.add_argument("--output", type=str, default="docs/research/figures", help="Output directory for figures")
+    parser.add_argument(
+        "--output",
+        type=str,
+        default="ml-models/evaluation/reports/dataset_visualizations",
+        help="Output directory for generated figures and summary files",
+    )
     args = parser.parse_args()
 
     csv_path = Path(args.dataset)
@@ -150,5 +154,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
