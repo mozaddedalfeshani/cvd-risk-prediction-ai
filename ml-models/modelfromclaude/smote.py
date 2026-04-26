@@ -35,7 +35,7 @@ from imblearn.over_sampling import SMOTE
 # STEP 1 — LOAD & PREPROCESS
 # ─────────────────────────────────────────────────────────────
 def load_data(binary=True):
-    df = pd.read_csv("ml-models/data/raw/MymensingUniversity.csv")
+    df = pd.read_csv("data/raw/MymensingUniversity.csv")
     df.drop(columns=[
         "Blood Pressure (mmHg)", "Height (m)",
         "CVD Risk Score", "Blood Pressure Category"
@@ -196,7 +196,7 @@ print("\n" + "=" * 65)
 print("  BINARY: NO SMOTE vs WITH SMOTE")
 print("=" * 65)
 try:
-    prev = pd.read_csv("ml-models/outputs/binary_results.csv")
+    prev = pd.read_csv("outputs/binary_results.csv")
     print(f"\n  {'Model':<22} {'No SMOTE':>10} {'With SMOTE':>12} {'  Δ':>8}")
     print(f"  {'─'*55}")
     for _, r in bin_res.iterrows():
@@ -246,6 +246,6 @@ print(f"""
      DOI: 10.1613/jair.953
 """)
 
-bin_res.to_csv("ml-models/outputs/smote_binary_results.csv", index=False)
-multi_res.to_csv("ml-models/outputs/smote_multi_results.csv", index=False)
+bin_res.to_csv("outputs/smote_binary_results.csv", index=False)
+multi_res.to_csv("outputs/smote_multi_results.csv", index=False)
 print("  [SAVED] smote_binary_results.csv | smote_multi_results.csv")

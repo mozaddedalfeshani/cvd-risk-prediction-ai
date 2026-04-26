@@ -34,7 +34,7 @@ from xgboost import XGBClassifier
 # STEP 1 — LOAD & PREPROCESS
 # ─────────────────────────────────────────────────────────────
 def load_data(binary=True):
-    df = pd.read_csv("ml-models/data/raw/MymensingUniversity.csv")
+    df = pd.read_csv("data/raw/MymensingUniversity.csv")
     df.drop(columns=[
         "Blood Pressure (mmHg)", "Height (m)",
         "CVD Risk Score", "Blood Pressure Category"
@@ -185,6 +185,6 @@ print(f"""
   their reported results using a fresh 2025 regional hospital dataset.
 """)
 
-bin_res.to_csv("ml-models/outputs/binary_results.csv", index=False)
-multi_res.to_csv("ml-models/outputs/multiclass_results.csv", index=False)
+bin_res.to_csv("outputs/binary_results.csv", index=False)
+multi_res.to_csv("outputs/multiclass_results.csv", index=False)
 print("  [SAVED] binary_results.csv | multiclass_results.csv")
