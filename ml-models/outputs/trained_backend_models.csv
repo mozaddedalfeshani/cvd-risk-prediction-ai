@@ -1,0 +1,2 @@
+model,artifact,target,accuracy,f1_score,cv_mean,cv_std,feature_count
+binary,cvd_binary_xgb.pkl,HIGH vs NON_HIGH,0.7549019607843137,0.7422680412371134,0.7402693336575876,0.027914588461861015,17
