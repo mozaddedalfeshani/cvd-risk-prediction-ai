@@ -2,13 +2,13 @@
 
 ## Project Structure & Module Organization
 - `frontend/` contains the Next.js 15 app: routes in `frontend/src/app`, reusable UI in `frontend/src/components`, helpers in `frontend/src/lib`, and static assets in `frontend/public`.
-- `api/` contains the Flask prediction service. Entrypoints are `api/app/app.py` and `api/app/app_dual.py`.
+- `api/` contains the single-model Flask prediction service. The backend entrypoint is `api/app/app.py`.
 - `ml-models/` holds training, preprocessing, evaluation, raw data, and saved model artifacts.
 - `docs/research/` and `notebooks/` store analysis outputs. Root files such as `test_backend.py`, `test_cases.json`, and `high_risk_test.json` act as integration fixtures.
 
 ## Build, Test, and Development Commands
 - `pip install -r requirements.txt` installs tooling; use `api/requirements.txt` and `ml-models/requirements.txt` when needed.
-- `python api/app/app.py` starts the mock prediction API. Use `python api/app/app_dual.py` to run the dual-model backend.
+- `python api/app/app.py` starts the single-model prediction API.
 - `cd frontend && npm install && npm run dev` starts the frontend on `http://localhost:3000`.
 - `cd frontend && npm run build` creates a production build; `cd frontend && npm run lint` runs ESLint.
 - `python test_backend.py` runs the repository’s backend integration script; start the API first.
