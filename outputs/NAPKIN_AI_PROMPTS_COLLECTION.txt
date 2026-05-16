@@ -1,0 +1,262 @@
+NAPKIN AI - QUICK COPY-PASTE PROMPTS
+================================================================================
+
+PROMPT VERSION 1: DETAILED (For Natural Language Processing)
+================================================================================
+
+"Create a UML sequence diagram showing how a CVD Risk Prediction System works 
+with 13 steps:
+
+Participants: Doctor/Frontend, Backend API Server, ML Model Engine
+
+Step 1: Doctor enters 17 medical values (Age, Weight, BMI, Blood Pressure, 
+Cholesterol, Diabetes, Smoking Status, etc.)
+
+Step 2: Doctor clicks 'Predict Risk' button
+
+Step 3: Frontend sends HTTP POST request with all data as JSON to Backend
+
+Step 4: Backend validates the input data format and checks for missing values
+
+Step 5: Backend normalizes/scales features (0-1 range) and encodes categories
+
+Step 6: Backend loads the pre-trained SVM model from storage (model.pkl)
+
+Step 7: Model receives and prepares the 17 processed features as input vector
+
+Step 8: SVM algorithm analyzes features and makes prediction
+
+Step 9: Model returns prediction (1=HIGH RISK or 0=NON-HIGH RISK) with confidence
+
+Step 10: Backend formats response as JSON with result and recommendations
+
+Step 11: Backend sends HTTP 200 response to Frontend
+
+Step 12: Frontend displays result (🔴 HIGH RISK or 🟢 NON-HIGH RISK)
+
+Step 13: Doctor reviews prediction and takes clinical action
+
+Use colors: Blue for Frontend, Orange for Backend, Purple for Model
+Add security notes about HTTPS encryption and audit logging"
+
+================================================================================
+
+PROMPT VERSION 2: CONCISE (For Quick Generation)
+================================================================================
+
+"Sequence diagram with 13 steps showing CVD prediction workflow:
+- Doctor enters 17 medical measurements and clicks Predict
+- Frontend sends HTTP request to Backend with JSON data
+- Backend validates, scales, and encodes the data
+- Backend loads trained SVM model from disk
+- Model processes 17 features and makes prediction (HIGH=1/NON-HIGH=0)
+- Backend returns formatted JSON response
+- Frontend displays colorized result (Red for HIGH, Green for NON-HIGH)
+- Doctor reviews and takes action
+
+Color scheme: Blue (Frontend), Orange (Backend), Purple (Model)
+Include timing: <2 seconds end-to-end
+Add notes: HTTPS encrypted, HIPAA compliant, Audit logged"
+
+================================================================================
+
+PROMPT VERSION 3: TECHNICAL (For Technical Teams)
+================================================================================
+
+"Generate UML sequence diagram for CVD Risk Prediction system showing:
+
+Actors: Frontend (React), Backend (Flask), ML Model (SVM)
+
+Message flow:
+1. Frontend: Doctor input 17 features → Display form
+2. Frontend: POST /api/predict with JSON payload
+3. Backend: Input validation & data cleaning
+4. Backend: Feature scaling (StandardScaler) + encoding (LabelEncoder)
+5. Backend: Load model artifact (joblib.load('svm_model.pkl'))
+6. Model: Feature vector inference (np.array([17 features]))
+7. Model: Decision function + confidence calculation
+8. Model: Return prediction (0/1) + probability
+9. Backend: Create response {prediction, confidence, interpretation}
+10. Backend: HTTP 200 + CORS headers
+11. Frontend: Parse JSON response
+12. Frontend: Render result component (HIGH_RISK/NON_HIGH_RISK)
+13. Doctor: Review and document decision
+
+Include: Error handling, timeout (30s), retry logic
+Security: TLS 1.2+, data encryption, audit trail"
+
+================================================================================
+
+DIRECT NAPKIN AI USAGE:
+================================================================================
+
+1. VISIT: https://napkin.ai
+2. SELECT: "Sequence Diagram" 
+3. PASTE: Any of the prompts above
+4. CLICK: "Generate"
+5. REFINE: If needed, ask Napkin to adjust colors/styling
+6. EXPORT: Download as PNG or SVG
+
+Alternative commands once in Napkin:
+- "Make the backend box bigger"
+- "Add security icons to HTTPS connections"
+- "Highlight steps 6-8 as the ML model execution"
+- "Change colors to be more professional"
+- "Add timing annotations"
+
+================================================================================
+
+MERMAID DIAGRAM SYNTAX (If using Mermaid instead):
+================================================================================
+
+```mermaid
+sequenceDiagram
+    actor Doctor as 👨‍⚕️ Doctor
+    participant Frontend as 📱 Frontend<br/>(React)
+    participant Backend as ⚙️ Backend<br/>(Flask)
+    participant Model as 🧠 Model<br/>(SVM)
+    
+    Note over Doctor,Model: CVD Risk Prediction Workflow
+    
+    Doctor->>Frontend: 1️⃣ Input 17 Medical Values<br/>(Age, Weight, BMI, BP, etc.)
+    activate Frontend
+    
+    Doctor->>Frontend: 2️⃣ Click "Predict Risk"
+    Frontend->>Backend: 3️⃣ POST /api/predict<br/>Headers: Content-Type: application/json
+    
+    activate Backend
+    Backend->>Backend: 4️⃣ Validate Data Format<br/>Check for missing/invalid
+    Backend->>Backend: 5️⃣ Scale Features (0-1)<br/>Encode Categories
+    
+    Backend->>Model: 6️⃣ Load SVM Model<br/>joblib.load('svm_model.pkl')
+    activate Model
+    
+    Model->>Model: 7️⃣ Prepare Input Vector<br/>17 features → numpy array
+    Model->>Model: 8️⃣ Run SVM Prediction<br/>Compute decision boundary
+    Model->>Model: 9️⃣ Calculate Confidence<br/>Get probability score
+    
+    Model-->>Backend: 🔟 Return Prediction<br/>(0 or 1) + Confidence %
+    deactivate Model
+    
+    Backend->>Backend: 1️⃣1️⃣ Format Response JSON<br/>{pred, confidence, interpretation}
+    Backend-->>Frontend: 1️⃣2️⃣ HTTP 200 Response<br/>HTTPS Encrypted
+    deactivate Backend
+    
+    Frontend->>Frontend: Parse JSON Response
+    Frontend->>Frontend: Render Result Component
+    Frontend-->>Doctor: 1️⃣3️⃣ Display Result<br/>🔴 HIGH RISK<br/>or<br/>🟢 NON-HIGH RISK
+    deactivate Frontend
+    
+    Doctor->>Doctor: 1️⃣4️⃣ Review & Document<br/>Decision for patient care
+    
+    Note over Backend: ⏱️ Processing time: <1 second
+    Note over Frontend: 🔒 HTTPS Encrypted
+    Note over Backend: 💾 Audit Logged
+```
+
+Save this as `diagram.mmd` and open with Mermaid Live: https://mermaid.live
+
+================================================================================
+
+DRAW.IO USAGE:
+================================================================================
+
+If you prefer Draw.io (https://draw.io):
+1. Go to Draw.io
+2. Plugins → Arrange by Attributes
+3. Create 4 vertical lines for: Doctor, Frontend, Backend, Model
+4. Add numbered arrows between them
+5. Add rectangles for processing steps
+6. Use colors: Blue, Orange, Purple
+7. Export as PNG
+
+================================================================================
+
+PLANTUML SYNTAX:
+================================================================================
+
+@startuml CVD_Prediction_Sequence
+!theme mars
+actor Doctor
+participant Frontend as "📱 Frontend\n(React)"
+participant Backend as "⚙️ Backend\n(Flask)"
+participant Model as "🧠 ML Model\n(SVM)"
+
+Doctor -> Frontend: 1. Input 17 Medical Values
+activate Frontend
+
+Doctor -> Frontend: 2. Click "Predict"
+Frontend -> Backend: 3. POST /api/predict (JSON)
+activate Backend
+
+Backend -> Backend: 4. Validate Data
+Backend -> Backend: 5. Scale & Encode
+Backend -> Model: 6. Load SVM Model
+activate Model
+
+Model -> Model: 7. Prepare Features
+Model -> Model: 8. Run Prediction
+Model -> Model: 9. Calculate Confidence
+Model --> Backend: 10. Return Prediction + Confidence
+deactivate Model
+
+Backend -> Backend: 11. Format Response
+Backend --> Frontend: 12. HTTP 200 (HTTPS)
+deactivate Backend
+
+Frontend -> Frontend: Parse & Render
+Frontend --> Doctor: 13. Show Result\n🔴 HIGH RISK\n🟢 NON-HIGH RISK
+deactivate Frontend
+
+Doctor -> Doctor: Review & Decide
+
+note over Backend, Model
+  Processing Time: <2 seconds
+  Security: HTTPS + Audit Log
+end note
+@enduml
+
+```
+
+Save as `diagram.puml` and render at: http://www.plantuml.com/plantuml/uml
+
+================================================================================
+
+BEST PRACTICES FOR NAPKIN AI PROMPTS:
+================================================================================
+
+✅ DO:
+- Be specific about the diagram type (Sequence, Flow, etc.)
+- List participants/actors clearly
+- Number steps chronologically
+- Include technical details (HTTP, JSON, etc.)
+- Specify colors and styling preferences
+- Add notes about timing/security
+- Use emojis for visual clarity
+
+❌ DON'T:
+- Use vague descriptions
+- Mix multiple diagram types
+- Forget to mention all participants
+- Omit important details
+- Use inconsistent terminology
+
+================================================================================
+
+QUICK REFERENCE:
+================================================================================
+
+📱 Frontend handles: User input, form validation, display results
+⚙️ Backend handles: API endpoints, data validation, model loading, response formatting
+🧠 Model handles: Feature processing, prediction, confidence scoring
+
+Flow direction: Doctor → Frontend → Backend → Model → Backend → Frontend → Doctor
+
+Data format: JSON over HTTP/HTTPS
+Model type: Support Vector Machine (SVM)
+Features: 17 medical measurements
+Classes: 2 (HIGH RISK = 1, NON-HIGH RISK = 0)
+Dataset size: Trained on 1,529 patients
+Accuracy: 79.08%
+
+================================================================================

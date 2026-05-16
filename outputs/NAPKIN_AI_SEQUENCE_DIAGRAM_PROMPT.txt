@@ -1,0 +1,160 @@
+NAPKIN AI SEQUENCE DIAGRAM PROMPT
+================================================================================
+
+Create a detailed sequence diagram for a CVD Risk Prediction System with the 
+following participants and interactions:
+
+DIAGRAM TYPE: Sequence Diagram (UML Style)
+
+PARTICIPANTS (3 actors):
+1. 👨‍⚕️ Doctor/Frontend User
+2. ⚙️ Backend API Server  
+3. 🧠 ML Model Engine
+
+SEQUENCE STEPS (11 steps):
+
+STEP 1: Input Medical Data
+Actor: Doctor/Frontend User
+Action: Doctor enters 17 medical values (Age, Weight, BMI, Blood Pressure, Cholesterol, Smoking Status, Diabetes Status, Physical Activity, Family History, HDL, LDL, Fasting Blood Sugar, etc.)
+Label: "📋 Input: 17 Medical Measurements"
+
+STEP 2: Trigger Prediction
+Actor: Doctor/Frontend User
+Action: Clicks "Predict Risk" button on the interface
+Label: "🔘 Click Predict Button"
+
+STEP 3: Send Request to Backend
+Actor: Frontend User → Backend API Server
+Action: Frontend sends HTTP POST request with all 17 patient values as JSON payload
+Label: "📨 HTTP POST Request\nJSON Payload with 17 Features"
+
+STEP 4: Validate Input Data
+Actor: Backend API Server
+Action: Backend validates input data format, checks for missing values, verifies data types
+Label: "✅ Validate Data Format\nCheck for Missing Values"
+
+STEP 5: Process & Normalize Data
+Actor: Backend API Server
+Action: Backend normalizes/scales features to 0-1 range, encodes categorical variables (Smoking: Yes→1, No→0), handles missing values with median imputation
+Label: "🔧 Process Data:\nScale Features (0-1)\nEncode Categories"
+
+STEP 6: Load Trained Model
+Actor: Backend API Server → ML Model Engine
+Action: Backend loads the pre-trained SVM model from disk file (model.pkl containing trained weights and parameters)
+Label: "💾 Load Model Artifact\nSVM.pkl from Storage"
+
+STEP 7: Prepare Features for Model
+Actor: ML Model Engine
+Action: Model receives processed 17 features in correct format, organizes them as input vector
+Label: "🔢 Prepare Input Vector\n17 Processed Features"
+
+STEP 8: Make Prediction
+Actor: ML Model Engine
+Action: SVM algorithm analyzes 17 features using learned patterns from 1,529 training patients, calculates decision boundary, outputs prediction score
+Label: "🤖 SVM Analysis:\nCompute Decision Boundary\nGenerate Prediction"
+
+STEP 9: Return Prediction Result
+Actor: ML Model Engine → Backend API Server
+Action: Model returns prediction result (1 for HIGH RISK or 0 for NON-HIGH RISK) and confidence score (probability percentage)
+Label: "📤 Return Prediction\n(0 or 1) + Confidence %"
+
+STEP 10: Format Response
+Actor: Backend API Server
+Action: Backend formats response as JSON including prediction result, confidence score, risk interpretation, and clinical recommendations
+Label: "📦 Format Response JSON:\n{prediction, confidence,\ninterpretation, recommendations}"
+
+STEP 11: Send Response to Frontend
+Actor: Backend API Server → Frontend User
+Action: Backend sends HTTP 200 response back to Frontend with formatted result
+Label: "📬 HTTP 200 Response\nJSON with Results"
+
+STEP 12: Display Result to Doctor
+Actor: Frontend User
+Action: Frontend displays clear visual result showing either "🔴 HIGH RISK - Immediate Action Needed" or "🟢 NON-HIGH RISK - Routine Monitoring"
+Label: "📊 Display Result:\nHIGH RISK 🔴 or NON-HIGH 🟢"
+
+STEP 13: Doctor Reviews & Takes Action
+Actor: Doctor/Frontend User
+Action: Doctor reviews the prediction and confidence score, decides next clinical steps (further testing, medication, lifestyle changes, etc.)
+Label: "💊 Doctor Reviews\n& Takes Action"
+
+TIMING NOTES:
+- Steps 1-2: User interaction (manual, variable time)
+- Steps 3-13: System processing (typically < 2 seconds total)
+- Step 3 to 11: Network + Backend processing (< 1 second)
+- Step 8: Model inference (< 100ms)
+
+COLOR CODING SUGGESTIONS:
+- Frontend interactions: Light Blue (#E3F2FD)
+- Backend processing: Light Orange (#FFF3E0)
+- Model operations: Light Purple (#F3E5F5)
+- Data flow arrows: Dark Blue (#1976D2)
+- Responses: Green (#4CAF50)
+
+ADDITIONAL ELEMENTS:
+- Add note: "⚠️ All data encrypted during transmission (HTTPS)"
+- Add note: "💾 Transaction logged for audit trail"
+- Add note: "🔒 HIPAA compliant data handling"
+- Add note: "⏱️ Response time: <2 seconds"
+
+STYLE PREFERENCES:
+- Modern, clean design
+- Include emojis for visual clarity
+- Clear labels on each arrow
+- Show timing/delays where relevant
+- Professional appearance suitable for medical context
+- High contrast for readability
+
+FINAL OUTPUT:
+Generate a comprehensive UML sequence diagram that clearly shows:
+1. All three actors vertically aligned
+2. Numbered steps (1-13) with clear sequence flow
+3. Request/response arrows between participants
+4. Processing boxes showing what happens at each step
+5. Proper timing indicators
+6. Color-coded for easy understanding
+7. Professional medical grade appearance
+
+================================================================================
+
+USAGE FOR NAPKIN AI:
+1. Copy this prompt
+2. Go to: https://napkin.ai
+3. Choose "Sequence Diagram" template
+4. Paste this prompt in the natural language input
+5. Napkin AI will generate the diagram
+6. Export as PNG/SVG
+
+OR use this as input to other diagram tools:
+- Draw.io (with natural language support)
+- Miro
+- Lucidchart
+- PlantUML
+- Mermaid Diagram
+
+ALTERNATIVE MERMAID CODE:
+If you prefer to use Mermaid.js, here's the syntax:
+
+```mermaid
+sequenceDiagram
+    participant Doctor as 👨‍⚕️ Doctor
+    participant Frontend as 📱 Frontend
+    participant Backend as ⚙️ Backend
+    participant Model as 🧠 Model
+
+    Doctor->>Frontend: 1. Input 17 Medical Values
+    Doctor->>Frontend: 2. Click "Predict" Button
+    Frontend->>Backend: 3. HTTP POST Request (JSON)
+    Backend->>Backend: 4. Validate Data Format
+    Backend->>Backend: 5. Process & Normalize Data
+    Backend->>Model: 6. Load SVM Model
+    Model->>Model: 7. Prepare Input Vector
+    Model->>Model: 8. Make Prediction
+    Model->>Backend: 9. Return (HIGH=1/NON-HIGH=0)
+    Backend->>Backend: 10. Format Response JSON
+    Backend->>Frontend: 11. HTTP 200 Response
+    Frontend->>Doctor: 12. Display Result (RED/GREEN)
+    Doctor->>Doctor: 13. Review & Take Action
+```
+
+================================================================================
